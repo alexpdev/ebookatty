@@ -1,0 +1,16 @@
+{
+  "name": "eBook_Metadata",
+  "version": "1.0.0",
+  "description": "Tools for extracting Metadata from EPUB MOBI and other kindle formats",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexpdev/eBook_Metadata.git"
+  },
+  "keywords": ["ebook","metadata","mobi"],
+  "author": "alexpdev@github.com",
+  "license": "GNU GPL 3",
+  "bugs": {
+    "url": "https://github.com/alexpdev/eBook_Metadata/issues"
+  },
+  "homepage": "https://github.com/alexpdev/eBook_Metadata#readme"
+}
