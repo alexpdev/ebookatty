@@ -4,7 +4,7 @@ Version 0.1.0
 
 ## License / EULA
 
-GNU GPL 3
+GNU LGPL v3.0
 [LICENSE FILE](./LICENSE)
 
 ## Overview
