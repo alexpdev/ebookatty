@@ -3,10 +3,43 @@
 
 import os
 import sys
+from pathlib import Path
 from os.path import dirname,abspath
 from argparse import ArgumentParser
 sys.path.append(dirname(dirname(abspath(__file__))))
-from src.ebook_metadata import get_metadata
+from src.epubmeta import EpubMeta
+from src.kindlemeta import KindleMeta
+from src.mobimeta import MobiMeta
+
+
+class PathDoesNotExistError(Exception):
+    pass
+
+class UnsupportedFormatError(Exception):
+    pass
+
+class MetadataFetcher:
+    def __init__(self,path):
+        self.path = Path(path)
+        if self.path.suffix == ".mobi":
+            self.meta = MobiMeta(self.path)
+        elif self.path.suffix == ".epub":
+            self.meta = EpubMeta(self.path)
+        elif self.path.suffix in [".azw3","azw","kfx"]:
+            self.meta = KindleMeta(self.path)
+        else:
+            raise UnsupportedFormatError
+    def get_metadata(self):
+        return self.meta.get_metadata()
+    @classmethod
+    def get(cls,path):
+        meta = cls(path)
+        metadata = meta.get_metadata()
+        return metadata
+
+def get_metadata(path):
+    metadata = MetadataFetcher.get(path)
+    return metadata
 
 def format_output(meta,path):
     output = path + "\n" + ("-"*len(path)) + "\n"
@@ -28,8 +61,6 @@ def format_output(meta,path):
         output += line
     return output
 
-
-
 def cliparse(args):
     parser = ArgumentParser(description="get ebook metadata")
     parser.add_argument("-f","--file",nargs="+",help="file path(s) for ebooks")
@@ -43,7 +74,3 @@ def cliparse(args):
 
 if __name__ == "__main__":
     cliparse(sys.argv[1:])
-
-
-
-

@@ -1,0 +1,14 @@
+# config file for automatic testing at travis-ci.org
+
+language: python
+python:
+- 3.8
+- 3.7
+- 3.6
+- 3.5
+
+deploy:
+  provider: testpypi
+  distributions: sdist bdist_wheel
+  username: "__token__"
+

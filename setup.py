@@ -7,9 +7,6 @@
 import io
 import json
 import os
-import subprocess
-import sys
-
 from setuptools import find_packages, setup
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -22,21 +19,16 @@ with io.open("README.md",encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="ebook-metadata",
+    name="pybook_metadata",
+    version=version_string,
     description=("Tool for extracting metadata from common ebook formats"),
     long_description=long_description,
-    version=version_string,
-    packages=find_packages(),
-    include_package_data=True,
-    zip_safe=False,
-    entry_points={"console_scripts":["ebook-metadata.cli"]},
-    install_requires=[],
-    python_requires="~3.6",
+    long_description_content_type="text/markdown",
     author="alexpdev",
     author_email="alexpdev@protonmail.com",
-    url="https://github.com/alexpdev",
-    classifiers=[
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-    ],
+    url="https://github.com/alexpdev/eBook_Metadata",
+    include_package_data=True,
+    python_requires=">=3.6",
+    package_dir={'':'src'},
+    packages=find_packages(where='src'),
 )

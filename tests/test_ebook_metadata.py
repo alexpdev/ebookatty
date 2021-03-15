@@ -3,16 +3,13 @@ from unittest import TestCase
 from os.path import abspath,dirname
 sys.path.append(dirname(dirname(abspath(__file__))))
 from data.paths import PATH
-from src.ebook_metadata import MetadataFetcher,get_metadata
+from src.pybook_metadata import MetadataFetcher, get_metadata
 
 class EbookMetadataTest(TestCase):
 
     def setUp(self):
         self.path = PATH
         self.pathiter = (i for i in PATH.iterdir() if i.suffix in [".azw3",".epub",".kfx",".mobi"])
-    
-    def test_ebook_formats(self):
-        pass
 
     def test_get_metadata(self):
         for path in self.pathiter:
