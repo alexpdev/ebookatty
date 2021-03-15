@@ -1,0 +1,20 @@
+include LICENSE
+include README.md
+include Makefile
+include tox.ini
+include requirements.txt
+
+prune docs
+
+recursive-include test *.py
+
+global-exclude __pycache__
+global-exclude .editorconfig
+global-exclude *.py[co]
+
+recursive-include src *.py
+
+exclude fabfile.py
+exclude mkenv.sh
+exclude pavement.py
+prune etc

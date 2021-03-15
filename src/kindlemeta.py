@@ -1,8 +1,11 @@
+#! /usr/bin/python3
+# -*- coding: utf-8 -*-
+
 import struct
 from pathlib import Path
-from src.utils import MetadataError, HeaderMissingError, BaseMeta
+from src.utils import MetadataError, HeaderMissingError, path_meta
 
-class KindleMeta(BaseMeta):
+class KindleMeta:
 
     def __init__(self,path):
         self.types = {
@@ -89,7 +92,6 @@ class KindleMeta(BaseMeta):
 
     def find_metadata(self):
         """ Find the offset to the EXTH header """
-        super().find_metadata()
         offset = self.data.find(b'EXTH')
         if offset < 0:
             raise HeaderMissingError(self.path)
@@ -107,6 +109,7 @@ class KindleMeta(BaseMeta):
 
     def get_metadata(self):
         meta = {}
+        self.metadata += path_meta(self.path)
         for k,v in self.metadata:
             if hasattr(v,"decode"):
                 v = v.decode(errors="replace")

@@ -1,12 +1,12 @@
-import sys,os
+#! /usr/bin/python3
+# -*- coding: utf-8 -*-
+
 import struct
 from pathlib import Path
-from os.path import abspath,dirname
-sys.path.append((dirname(dirname(abspath(__file__)))))
-from src.utils import HeaderMissingError, MetadataError, BaseMeta
+from src.utils import HeaderMissingError, MetadataError, path_meta
 
 
-class MobiMeta(BaseMeta):
+class MobiMeta:
 
     def __init__(self,path):
         self.types = {
@@ -97,7 +97,6 @@ class MobiMeta(BaseMeta):
 
     def find_metadata(self):
         """ Find the offset to the EXTH header """
-        super().find_metadata()
         offset = self.data.find(b'EXTH')
         if offset < 0:
             raise HeaderMissingError(self.path)
@@ -114,6 +113,7 @@ class MobiMeta(BaseMeta):
 
     def get_metadata(self):
         meta = {}
+        self.metadata += path_meta(self.path)
         for k,v in self.metadata:
             if hasattr(v,"decode"):
                 v = v.decode(errors="replace")
@@ -129,9 +129,3 @@ class MobiMeta(BaseMeta):
                 else:
                     meta[str(k)].append(v)
         return meta
-
-
-if __name__ == '__main__':
-    ebook = None
-    ebook = MobiMeta(ebook)
-    meta = ebook.get_metadata()

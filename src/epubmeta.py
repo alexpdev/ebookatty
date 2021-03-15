@@ -1,11 +1,15 @@
+#! /usr/bin/python3
+# -*- coding: utf-8 -*-
+
 import re
 from zipfile import ZipFile
 from xml.etree import ElementTree as ET
 from pathlib import Path
-from src.utils import MetadataError, BaseMeta
+from src.utils import MetadataError, path_meta
+from src.standards import _OPF_PARENT_TAGS
 
 
-class EpubMeta(BaseMeta):
+class EpubMeta:
 
     def __init__(self,path):
         self.tags = [
@@ -111,7 +115,6 @@ class EpubMeta(BaseMeta):
         raise Exception
 
     def find_metadata(self):
-        super().find_metadata()
         opf_file = self.get_opf()
         try:
             self.xpath_parse(opf_file)
@@ -155,6 +158,7 @@ class EpubMeta(BaseMeta):
         self.metadata += metadata
 
     def get_metadata(self):
+        self.metadata += path_meta(self.path)
         meta = {}
         for k,v in self.metadata:
             if "dc:" in k:

@@ -1,47 +1,51 @@
+#! /usr/bin/python3
+# -*- coding: utf-8 -*-
+
 from pathlib import Path
-
-class BaseMeta:
-    def __init__(self,path,*args,**kwargs):
-        self.path = Path(path)
-        self.metadata = []
-
-    def find_metadata(self):
-        records = [
-            ("filename" , self.path.name),
-            ("extension" , self.path.suffix),
-            ("path" , str(self.path)),
-            ("size" , self.path.stat().st_size)
-            ]
-        self.metadata += records
-
-    def get_metadata(self):
-        return self.metadata
 
 class HeaderMissingError(Exception):
     def __init__(self,path):
-        path = Path(path)
-        self.path = path
-        self.type = None
-        self.get_type()
-    def __str__(self):
-        messg = f"Header not found in {self.path.name} file. \nConfirm format matches {self.type}"
-        return  messg
-    def get_type(self):
+        self.path = Path(path)
         if self.path.suffix in [".azw3",".azw",".kfx"]:
             self.type = "Kindle"
         elif self.path.suffix == ".mobi":
             self.type = "MOBI"
         elif self.path.suffix == ".epub":
             self.type = "Epub"
+    def __str__(self):
+        return f"Header not found in {self.path.name} file. \nConfirm format matches {self.type}"
+
 
 class MetadataError(HeaderMissingError):
     def __init__(self,path):
         super().__init__(path)
-        self.path = Path(path)
-        self.type = None
-        super().get_type()
     def __str__(self):
         return f"Could not find metadata for {self.path.name}\nConfirm format matches {self.type}"
+
+
+def path_meta(path):
+    if isinstance(path,str):
+        path = Path(path)
+    metadata = [
+        ("filename" , path.name),
+        ("path" , str(path)),
+        ("extension", path.suffix),
+        ("size", path.stat().st_size)
+    ]
+    return metadata
+
+
+def reverse_tag_iter(block):
+    end = len(block)
+    while True:
+        pgt = block.rfind(b">", 0, end)
+        if pgt == -1:
+            break
+        plt = block.rfind(b"<", 0, pgt)
+        if plt == -1:
+            break
+        yield block[plt : pgt + 1]
+        end = plt
 
 def getLanguage(langID, sublangID):
     langdict = {
