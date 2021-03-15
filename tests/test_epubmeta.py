@@ -2,32 +2,31 @@ import sys
 from unittest import TestCase
 from os.path import abspath,dirname
 sys.path.append(dirname(dirname(abspath(__file__))))
-from data.paths import KINDLE_BOOKS
-from src.kindlemeta import KindleMeta
+from data.paths import EPUB_BOOKS
+from src.epubmeta import EpubMeta
 
-class KindleTest(TestCase):
+class EpubTest(TestCase):
 
     def setUp(self):
-        self.pathiter = KINDLE_BOOKS
+        self.pathiter = EPUB_BOOKS
 
-    def test_mobi_funcs(self):
+    def test_epub_funcs(self):
         for path in self.pathiter:
-            self.assertIn(path.suffix,[".azw3",".azw",".kfx"])
-            meta = KindleMeta(path)
-            self.assertTrue(KindleMeta)
+            self.assertEqual(path.suffix,".epub")
+            meta = EpubMeta(path)
+            self.assertTrue(EpubMeta)
             self.assertEqual(meta.suffix,path.suffix)
             self.assertEqual(meta.stem,path.stem)
             self.assertEqual(meta.name,path.name)
-            self.assertEqual(meta.data,path.read_bytes())
-            self.assertTrue(meta.metadata)
 
     def test_metadata(self):
         for path in self.pathiter:
             path = abspath(path)
-            meta = KindleMeta(path)
+            meta = EpubMeta(path)
             self.assertTrue(meta.path.exists())
             metadata = meta.get_metadata()
             self.assertIn("filename",metadata)
             self.assertIn("extension",metadata)
             self.assertIn("size",metadata)
             self.assertIn("path",metadata)
+

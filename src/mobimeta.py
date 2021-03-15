@@ -3,26 +3,10 @@ import struct
 from pathlib import Path
 from os.path import abspath,dirname
 sys.path.append((dirname(dirname(abspath(__file__)))))
-from data.paths import MOBI_PATH
-
-class HeaderMissingError(Exception):
-    def __init__(self,name):
-        self.message="No header found. This mobi file might be improperly formatted"
-        self.name = name
-    def __str__(self):
-        message = self.message + " \nDouble Check the extension for " + self.name
-        return  message
-    def __repr__(self) :
-        return str(self)
-
-class MetadataError(Exception):
-    def __init__(self,name):
-        self.name = name
-    def __str__(self):
-        return "Could not find metadata for " + self.name + "\nIt may be formatted incorrectly or possibly homemade."
+from src.utils import HeaderMissingError, MetadataError, BaseMeta
 
 
-class MobiMeta:
+class MobiMeta(BaseMeta):
 
     def __init__(self,path):
         self.types = {
@@ -86,13 +70,18 @@ class MobiMeta:
             542	:"Unknown",#	Some Unix timestamp.
             547	:"InMemory",#	String 'I\x00n\x00M\x00e\x00m\x00o\x00r\x00y\x00' found in this record, for KindleGen V2.9 build 1029-0897292
         }
-        self.path = path
-        self.name = path.name
-        self.stem = path.stem
-        self.suffix = path.suffix
-        self.data = path.read_bytes()
+        self.path = Path(path)
+        self.name = self.path.name
+        self.stem = self.path.stem
+        self.suffix = self.path.suffix
+        self.data = self.path.read_bytes()
+        self.palmheader = self.data[:78]
+        self.palmname = self.data[:32]
         self.metadata = []
         self.find_metadata()
+
+    def __str__(self):
+        return f"EpubMeta({str(self.path)})"
 
     def unShort(self,x):
         buffer = self.data
@@ -108,9 +97,10 @@ class MobiMeta:
 
     def find_metadata(self):
         """ Find the offset to the EXTH header """
+        super().find_metadata()
         offset = self.data.find(b'EXTH')
         if offset < 0:
-            raise HeaderMissingError(self.name)
+            raise HeaderMissingError(self.path)
         _,headLen,recCount = self.unLongx(3,offset)
         offset += 12
         for _ in range(recCount):
@@ -120,23 +110,24 @@ class MobiMeta:
             self.metadata.append(record)
             offset += size
         if len(self.metadata) < 1:
-            raise MetadataError(self.name)
+            raise MetadataError(self.path)
 
     def get_metadata(self):
         meta = {}
         for k,v in self.metadata:
-            val = v.decode(errors="replace")
+            if hasattr(v,"decode"):
+                v = v.decode(errors="replace")
             if k in self.types:
                 type_ = self.types[k]
                 if type_ not in meta:
-                    meta[type_] = [val]
+                    meta[type_] = [v]
                 else:
-                    meta[type_].append(val)
+                    meta[type_].append(v)
             else:
                 if str(k) not in meta:
-                    meta[str(k)] = [val]
+                    meta[str(k)] = [v]
                 else:
-                    meta[str(k)].append(val)
+                    meta[str(k)].append(v)
         return meta
 
 
