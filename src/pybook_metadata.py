@@ -1,7 +1,6 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import os
 import sys
 from pathlib import Path
 from os.path import dirname,abspath
@@ -59,11 +58,11 @@ def format_output(book):
     return output
 
 
-def cliparse(args):
+def cliparse():
     parser = ArgumentParser(description="get ebook metadata")
     parser.add_argument("-f","--file",nargs="+",help="path to ebook")
     parser.add_argument("-d","--directory",action='append',help="path to ebooks directory")
-    paths = parser.parse_args(sys.argv)
+    paths = parser.parse_args(sys.argv[1:])
     if paths.file:
         for fname in paths.file:
             print(format_output(get_metadata(fname)))
@@ -76,4 +75,4 @@ def cliparse(args):
 
 
 if __name__ == "__main__":
-    cliparse(sys.argv[1:])
+    cliparse()
