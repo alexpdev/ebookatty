@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
-from zipfile import ZipFile
+import zipfile
 from xml.etree import ElementTree as ET
 from pathlib import Path
 from src.utils import MetadataError, path_meta
@@ -13,9 +13,9 @@ class EpubMeta:
 
     def __init__(self,path):
         self.tags = [
-            "metadata",
             "dc:title",
             "dc:contributor",
+            "dc:creator",
             "dc:identifier",
             "dc:language",
             "dc:publisher",
@@ -23,25 +23,18 @@ class EpubMeta:
             "dc:description",
             "dc:subject",
             "dc:rights",
-            "dc:format",
-            "identifier",
             "creator",
             "publisher",
             "title",
-            "author",
             "language",
             "description",
             "subject"
-        ]
-        
-        self.metafiles = [
-            "content.opf",
         ]
         self.path = Path(path)
         self.name = self.path.name
         self.stem = self.path.stem
         self.suffix = self.path.suffix
-        self.zipfile = ZipFile(self.path)
+        self.zipfile = zipfile.ZipFile(self.path)
         self.metadata = []
         self.find_metadata()
 
@@ -55,33 +48,33 @@ class EpubMeta:
         raise Exception
 
     def find_metadata(self):
-        opf_file = self.get_opf()
-        try:
-            self.xpath_parse(opf_file)
-        except Exception as e:
-            self.pattern_parse(opf_file)
+        with self.zipfile as zfile:
+            opf_file = self.get_opf()
+            with zfile.open(opf_file,"r") as zfile:
+                ztext = zfile.read()
+                self.xpath_parse(ztext)
+                self.pattern_parse(ztext)
         return self.metadata
 
     def pattern_parse(self,opf):
-        text = self.zipfile.open(opf).read()
-        lines = text.split(b"\n")
+        text = str(opf)
         metadata = []
         for tag in self.tags:
-            pat1 = re.compile(b"<tag.*?>")
-            pat2 = re.compile(b"<tag.?>")
-            pat3 = re.compile(b"</metadata>")
-            for line in lines:
-                if pat3.search(line): break
-                otag, ctag = pat1.search(line), pat2.search(line)
-                if not otag: continue
-                text = line[otag.end():ctag.start()]
-                record = (tag,text)
-                metadata.append(record)
+            pat1 = re.compile(f"<{tag}.*?>(.*)</{tag}",re.S | re.M)
+            result = pat1.search(text)
+            if result:
+                groups = result.groups()
+                if isinstance(groups,str):
+                    record = (tag,groups)
+                    metadata.append(record)
+                else:
+                    for group in groups:
+                        record = (tag,group)
+                        metadata.append(record)
         self.metadata += metadata
 
     def xpath_parse(self,opf):
-        et = ET(self.zipfile.open(opf))
-        root = et.getroot()
+        root = ET.fromstring(opf)
         ns = {
             "dc" : "http://purl.org/dc/elements/1.1/",
             "opf" : "http://www.idpf.org/2007/opf",
@@ -93,8 +86,6 @@ class EpubMeta:
             matches = root.findall(tag,ns)
             records = [(tag,match.text) for match in matches]
             metadata += records
-        if not metadata:
-            raise MetadataError
         self.metadata += metadata
 
     def get_metadata(self):

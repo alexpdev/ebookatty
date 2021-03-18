@@ -45,7 +45,7 @@ def get_metadata(path):
 
 def format_output(book):
     output = ""
-    fields = ["filename","path","extension","size","author","title","publisher","creator"]
+    fields = ["filename","path","extension","size","author","title","publisher","creator","language","contributor","date"]
     longest_line = 0
     longest_field = max([len(i) for i in fields])
     for field in fields:
@@ -63,7 +63,7 @@ def cliparse(args):
     parser = ArgumentParser(description="get ebook metadata")
     parser.add_argument("-f","--file",nargs="+",help="path to ebook")
     parser.add_argument("-d","--directory",action='append',help="path to ebooks directory")
-    paths = parser.parse_args(args)
+    paths = parser.parse_args(sys.argv)
     if paths.file:
         for fname in paths.file:
             print(format_output(get_metadata(fname)))
@@ -71,10 +71,7 @@ def cliparse(args):
         d = [Path(i) for i in paths.directory]
         for path in d:
             for item in path.iterdir():
-                try:
-                    print(format_output(get_metadata(item)))
-                except:
-                    pass
+                print(format_output(get_metadata(item)))
     print(paths,dir(paths))
 
 
