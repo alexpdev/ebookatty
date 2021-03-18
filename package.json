@@ -1,6 +1,6 @@
 {
   "name": "ebook_metadata",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Tools for extracting Metadata from EPUB MOBI and other kindle formats",
   "repository": {
     "type": "git",
