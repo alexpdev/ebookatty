@@ -29,8 +29,10 @@ class MetadataFetcher:
             self.meta = KindleMeta(self.path)
         else:
             raise UnsupportedFormatError
+
     def get_metadata(self):
         return self.meta.get_metadata()
+
     @classmethod
     def get(cls,path):
         meta = cls(path)
@@ -41,36 +43,40 @@ def get_metadata(path):
     metadata = MetadataFetcher.get(path)
     return metadata
 
-def format_output(meta,path):
-    output = path + "\n" + ("-"*len(path)) + "\n"
-    maxlen = max([len(i) for i in meta.keys()]) * 2
-    diff = 90 - maxlen
-    for k,v in meta.items():
-        line = k + (" "*(maxlen - len(k))) + "|"
-        if len(v) > 1:
-            v = ", ".join(v)
-        else:
-            v = str(v[0])
-        vlen = len(v)
-        if vlen > diff:
-            vdiff = vlen - (vlen - diff)
-            line += v[:vdiff] + "\n"
-            line += (" "*maxlen) + v[vdiff:] + "\n"
-        else:
-            line += v + "\n"
-        output += line
+def format_output(book):
+    output = ""
+    fields = ["filename","path","extension","size","author","title","publisher","creator"]
+    longest_line = 0
+    longest_field = max([len(i) for i in fields])
+    for field in fields:
+        if field in book:
+            extra_spaces = longest_field - len(field)
+            line = field.title() + (" "*extra_spaces) + "\t" + str(book[field][0]) + "\n"
+            output += line
+            if len(line) > longest_line:
+                longest_line = len(line)
+    output += "-"*longest_line + "\n"
     return output
+
 
 def cliparse(args):
     parser = ArgumentParser(description="get ebook metadata")
-    parser.add_argument("-f","--file",nargs="+",help="file path(s) for ebooks")
-    parser.add_argument("-d","--directory",action='append',help="file path(s) for ebooks")
+    parser.add_argument("-f","--file",nargs="+",help="path to ebook")
+    parser.add_argument("-d","--directory",action='append',help="path to ebooks directory")
     paths = parser.parse_args(args)
-    for p in paths.path[0]:
-        if os.path.exists(p):
-            metadata = get_metadata(p)
-            output = format_output(metadata,p)
-            print(output)
+    if paths.file:
+        for fname in paths.file:
+            print(format_output(get_metadata(fname)))
+    if paths.directory:
+        d = [Path(i) for i in paths.directory]
+        for path in d:
+            for item in path.iterdir():
+                try:
+                    print(format_output(get_metadata(item)))
+                except:
+                    pass
+    print(paths,dir(paths))
+
 
 if __name__ == "__main__":
     cliparse(sys.argv[1:])
