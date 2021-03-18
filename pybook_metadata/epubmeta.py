@@ -5,8 +5,8 @@ import re
 import zipfile
 from xml.etree import ElementTree as ET
 from pathlib import Path
-from src.utils import MetadataError, path_meta
-from src.standards import _OPF_PARENT_TAGS
+from pybook_metadata.utils import MetadataError, path_meta
+from pybook_metadata.standards import _OPF_PARENT_TAGS
 
 
 class EpubMeta:

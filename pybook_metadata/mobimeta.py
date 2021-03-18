@@ -3,8 +3,8 @@
 
 import struct
 from pathlib import Path
-from src.utils import HeaderMissingError, MetadataError, path_meta
-from src.standards import EXTH_Types
+from pybook_metadata.utils import HeaderMissingError, MetadataError, path_meta
+from pybook_metadata.standards import EXTH_Types
 
 
 class MobiMeta:

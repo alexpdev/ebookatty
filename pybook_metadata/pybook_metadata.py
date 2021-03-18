@@ -6,9 +6,9 @@ from pathlib import Path
 from os.path import dirname,abspath
 from argparse import ArgumentParser
 sys.path.append(dirname(dirname(abspath(__file__))))
-from src.epubmeta import EpubMeta
-from src.kindlemeta import KindleMeta
-from src.mobimeta import MobiMeta
+from pybook_metadata.epubmeta import EpubMeta
+from pybook_metadata.kindlemeta import KindleMeta
+from pybook_metadata.mobimeta import MobiMeta
 
 
 class PathDoesNotExistError(Exception):
