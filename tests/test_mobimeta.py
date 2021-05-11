@@ -3,7 +3,7 @@ from unittest import TestCase
 from os.path import abspath,dirname
 sys.path.append(dirname(dirname(abspath(__file__))))
 from data.paths import MOBI_BOOKS
-from src.mobimeta import MobiMeta
+from ebook_meta.mobimeta import MobiMeta
 
 class MobiTest(TestCase):
 
@@ -31,8 +31,3 @@ class MobiTest(TestCase):
             self.assertIn("extension",metadata)
             self.assertIn("path",metadata)
             self.assertIn("size",metadata)
-
-
-
-
-

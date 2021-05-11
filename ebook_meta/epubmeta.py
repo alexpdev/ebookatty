@@ -5,8 +5,8 @@ import re
 import zipfile
 from xml.etree import ElementTree as ET
 from pathlib import Path
-from pybook_metadata.utils import MetadataError, path_meta
-from pybook_metadata.standards import _OPF_PARENT_TAGS
+from ebook_meta.utils import MetadataError, path_meta
+from ebook_meta.standards import _OPF_PARENT_TAGS
 
 
 class EpubMeta:
@@ -45,7 +45,7 @@ class EpubMeta:
         for fname in self.zipfile.namelist():
             if fname.endswith(".opf"):
                 return fname
-        raise Exception
+        raise MetadataError
 
     def find_metadata(self):
         with self.zipfile as zfile:

@@ -3,7 +3,7 @@ from unittest import TestCase
 from os.path import abspath,dirname
 sys.path.append(dirname(dirname(abspath(__file__))))
 from data.paths import PATH
-from src.pybook_metadata import MetadataFetcher, get_metadata
+from ebook_meta.pybook_metadata import MetadataFetcher, get_metadata
 
 class EbookMetadataTest(TestCase):
 
@@ -38,5 +38,3 @@ class EbookMetadataTest(TestCase):
             self.assertIn("path",metadata)
             self.assertIn("extension",metadata)
             self.assertIn("size",metadata)
-
-

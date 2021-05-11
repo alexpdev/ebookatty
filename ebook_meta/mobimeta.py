@@ -3,10 +3,11 @@
 
 import struct
 from pathlib import Path
-from pybook_metadata.utils import MetadataError, HeaderMissingError, path_meta
-from pybook_metadata.standards import EXTH_Types
+from ebook_meta.utils import HeaderMissingError, MetadataError, path_meta
+from ebook_meta.standards import EXTH_Types
 
-class KindleMeta:
+
+class MobiMeta:
     types = EXTH_Types
 
     def __init__(self,path):
@@ -20,6 +21,9 @@ class KindleMeta:
         self.metadata = []
         self.find_metadata()
 
+    def __str__(self):
+        return f"EpubMeta({str(self.path)})"
+
     def unShort(self,x):
         buffer = self.data
         val = struct.unpack_from(">H", buffer, x)
@@ -31,13 +35,13 @@ class KindleMeta:
         val = struct.unpack_from(form, buffer, x)
         return val
 
+
     def find_metadata(self):
         """ Find the offset to the EXTH header """
         offset = self.data.find(b'EXTH')
         if offset < 0:
             raise HeaderMissingError(self.path)
         _,headLen,recCount = self.unLongx(3,offset)
-        print(headLen)
         offset += 12
         for _ in range(recCount):
             id, size = self.unLongx(2,offset)

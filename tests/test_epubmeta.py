@@ -3,7 +3,7 @@ from unittest import TestCase
 from os.path import abspath,dirname
 sys.path.append(dirname(dirname(abspath(__file__))))
 from data.paths import EPUB_BOOKS
-from src.epubmeta import EpubMeta
+from ebook_meta.epubmeta import EpubMeta
 
 class EpubTest(TestCase):
 
@@ -29,4 +29,3 @@ class EpubTest(TestCase):
             self.assertIn("extension",metadata)
             self.assertIn("size",metadata)
             self.assertIn("path",metadata)
-

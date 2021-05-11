@@ -4,23 +4,10 @@
 from pathlib import Path
 
 class HeaderMissingError(Exception):
-    def __init__(self,path):
-        self.path = Path(path)
-        if self.path.suffix in [".azw3",".azw",".kfx"]:
-            self.type = "Kindle"
-        elif self.path.suffix == ".mobi":
-            self.type = "MOBI"
-        elif self.path.suffix == ".epub":
-            self.type = "Epub"
-    def __str__(self):
-        return f"Header not found in {self.path.name} file. \nConfirm format matches {self.type}"
-
+    pass
 
 class MetadataError(HeaderMissingError):
-    def __init__(self,path):
-        super().__init__(path)
-    def __str__(self):
-        return f"Could not find metadata for {self.path.name}\nConfirm format matches {self.type}"
+    pass
 
 
 def path_meta(path):
@@ -33,7 +20,6 @@ def path_meta(path):
         ("size", path.stat().st_size)
     ]
     return metadata
-
 
 def reverse_tag_iter(block):
     end = len(block)
