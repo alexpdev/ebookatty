@@ -7,6 +7,7 @@ from ebook_meta.utils import MetadataError, HeaderMissingError, path_meta
 from ebook_meta.standards import EXTH_Types
 
 class KindleMeta:
+
     types = EXTH_Types
 
     def __init__(self,path):

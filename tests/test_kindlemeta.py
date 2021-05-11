@@ -20,6 +20,9 @@ class KindleTest(TestCase):
             self.assertEqual(meta.name,path.name)
             self.assertEqual(meta.data,path.read_bytes())
             self.assertTrue(meta.metadata)
+            print(meta.palmheader)
+            print(meta.palmname)
+            print(meta.metadata)
 
     def test_metadata(self):
         for path in self.pathiter:

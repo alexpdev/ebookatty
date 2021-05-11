@@ -18,6 +18,7 @@ class EpubTest(TestCase):
             self.assertEqual(meta.suffix,path.suffix)
             self.assertEqual(meta.stem,path.stem)
             self.assertEqual(meta.name,path.name)
+            print(meta.metadata)
 
     def test_metadata(self):
         for path in self.pathiter:
@@ -29,3 +30,4 @@ class EpubTest(TestCase):
             self.assertIn("extension",metadata)
             self.assertIn("size",metadata)
             self.assertIn("path",metadata)
+            print(metadata)

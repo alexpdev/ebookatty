@@ -20,6 +20,8 @@ class MobiTest(TestCase):
             self.assertEqual(mobimeta.name,path.name)
             self.assertEqual(mobimeta.data,path.read_bytes())
             self.assertTrue(mobimeta.metadata)
+            print(mobimeta.metadata)
+
 
     def test_metadata(self):
         for path in self.pathiter:
@@ -31,3 +33,4 @@ class MobiTest(TestCase):
             self.assertIn("extension",metadata)
             self.assertIn("path",metadata)
             self.assertIn("size",metadata)
+            print(metadata)
