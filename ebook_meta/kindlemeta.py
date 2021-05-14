@@ -38,7 +38,6 @@ class KindleMeta:
         if offset < 0:
             raise HeaderMissingError(self.path)
         _,headLen,recCount = self.unLongx(3,offset)
-        print(headLen)
         offset += 12
         for _ in range(recCount):
             id, size = self.unLongx(2,offset)

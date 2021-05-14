@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import json
 from pathlib import Path
 from os.path import dirname,abspath
 from argparse import ArgumentParser
@@ -75,4 +76,12 @@ def cliparse():
 
 
 if __name__ == "__main__":
-    cliparse()
+    from data.paths import KINDLE_BOOKS, MOBI_BOOKS, EPUB_BOOKS
+    tempfile = open("data\\tempfile.json","wt")
+    books = KINDLE_BOOKS + MOBI_BOOKS + EPUB_BOOKS + EPUB_BOOKS
+    lst = []
+    for book in books:
+        meta = MetadataFetcher.get(book)
+        lst.append(meta)
+    json.dump(lst,tempfile)
+    tempfile.close()
