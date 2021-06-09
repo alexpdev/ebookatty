@@ -38,7 +38,7 @@ setup(
     author=info["author"],
     author_email=info["email"],
     url=info["url"],
-    project_urls={"Source Code": "https://github.com/alexpdev/pybook_metadata"},
+    project_urls={"Source Code": "https://github.com/alexpdev/ebookmeta"},
     license=info["license"],
     packages=find_packages(exclude=["tests", "env"]),
     include_package_data=True,

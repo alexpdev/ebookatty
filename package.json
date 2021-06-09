@@ -17,7 +17,7 @@
   },
   "keywords": ["ebook","metadata","mobi"],
   "author": "alexpdev",
-  "url": "git+https://github.com/alexpdev/ebookmeta.git",
+  "url": "https://github.com/alexpdev/ebookmeta",
   "files": ["main.js"],
   "bugs": {
     "url": "https://github.com/alexpdev/ebookmeta/issues"
