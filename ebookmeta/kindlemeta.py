@@ -24,7 +24,8 @@ Classes and functions for .azw, .azw3, and .kfx ebooks.
 """
 import struct
 from pathlib import Path
-from ebookmeta.utils import MetadataError, HeaderMissingError, path_meta
+
+from ebookmeta.utils import HeaderMissingError, MetadataError, path_meta
 
 
 class KindleMeta:

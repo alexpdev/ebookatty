@@ -23,8 +23,9 @@ Metadata Parsing and extracting from ebook files.
 ebookmeta module.
 """
 import sys
-from pathlib import Path
 from argparse import ArgumentParser
+from pathlib import Path
+
 from ebookmeta.epubmeta import EpubMeta
 from ebookmeta.kindlemeta import KindleMeta
 from ebookmeta.mobimeta import MobiMeta

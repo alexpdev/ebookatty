@@ -17,15 +17,15 @@
   },
   "keywords": ["ebook","metadata","mobi"],
   "author": "alexpdev",
-  "url": "git+https://github.com/alexpdev/eBook_Metadata.git",
+  "url": "git+https://github.com/alexpdev/ebookmeta.git",
   "files": ["main.js"],
   "bugs": {
-    "url": "https://github.com/alexpdev/eBook_Metadata/issues"
+    "url": "https://github.com/alexpdev/ebookmeta/issues"
   },
   "repository": {
     "type": "git"
   },
-  "homepage": "https://github.com/alexpdev/eBook_Metadata#readme",
+  "homepage": "https://github.com/alexpdev/ebookmeta#readme",
   "email": "alexpdev@protonmail.com",
   "readme": "./README.md",
   "license": "GNU LGPL v3"

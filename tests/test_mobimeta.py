@@ -21,6 +21,7 @@
 
 from pathlib import Path
 from unittest import TestCase
+
 from ebookmeta.mobimeta import MobiMeta
 
 

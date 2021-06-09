@@ -24,6 +24,7 @@ Classes and functions for .mobi ebooks.
 """
 import struct
 from pathlib import Path
+
 from ebookmeta.utils import HeaderMissingError, MetadataError, path_meta
 
 

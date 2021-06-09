@@ -25,10 +25,11 @@ Classes and functions for .epub files.
 
 import re
 import zipfile
-from xml.etree import ElementTree as ET
 from pathlib import Path
-from ebookmeta.utils import MetadataError, path_meta
+from xml.etree import ElementTree as ET
+
 from ebookmeta.standards import _OPF_PARENT_TAGS
+from ebookmeta.utils import MetadataError, path_meta
 
 
 class EpubMeta:

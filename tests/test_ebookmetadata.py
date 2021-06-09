@@ -21,6 +21,7 @@
 
 from pathlib import Path
 from unittest import TestCase
+
 from ebookmeta.ebookmeta import MetadataFetcher, get_metadata
 
 
