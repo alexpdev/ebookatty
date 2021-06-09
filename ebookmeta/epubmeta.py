@@ -1,23 +1,27 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
-##############################################################################
-#     Copyright (C) 2021  alexpdev
+########################################################################
+#  Copyright (C) 2021  alexpdev
 #
-#     This program is free software: you can redistribute it and/or modify
-#     it under the terms of the GNU Lesser General Public License as published by
-#     the Free Software Foundation, either version 3 of the License, or
-#     (at your option) any later version.
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-#     This program is distributed in the hope that it will be useful,
-#     but WITHOUT ANY WARRANTY; without even the implied warranty of
-#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#     GNU Lesser General Public License for more details.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-#     You should have received a copy of the GNU Lesser General Public License
-#     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-###############################################################################
-"""Module contains implementation specific to epub formatted ebooks. """
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#########################################################################
+"""
+Contains implementation specific to epub formatted ebooks.
+
+Classes and functions for .epub files.
+"""
 
 import re
 import zipfile
@@ -28,9 +32,9 @@ from ebookmeta.standards import _OPF_PARENT_TAGS
 
 
 class EpubMeta:
-    """Gather Epub Metadata. """
+    """Gather Epub Metadata."""
 
-    def __init__(self,path):
+    def __init__(self, path):
         """
         Construct the EpubMeta Class Instance.
 
@@ -53,7 +57,7 @@ class EpubMeta:
             "title",
             "language",
             "description",
-            "subject"
+            "subject",
         ]
         self.path = Path(path)
         self.name = self.path.name
@@ -96,15 +100,15 @@ class EpubMeta:
         """
         with self.zipfile as zfile:
             opf_file = self.get_opf()
-            with zfile.open(opf_file,"r") as zfile:
+            with zfile.open(opf_file, "r") as zfile:
                 ztext = zfile.read()
                 self.xpath_parse(ztext)
                 self.pattern_parse(ztext)
         return self.metadata
 
-    def pattern_parse(self,opf):
+    def pattern_parse(self, opf):
         """
-        Parse .opf file for Metadata using regex. and xpath
+        Parse .opf file for Metadata using regex. and xpath.
 
         Args:
             opf (str):  path to opf file
@@ -112,20 +116,20 @@ class EpubMeta:
         text = str(opf)
         metadata = []
         for tag in self.tags:
-            pat1 = re.compile(f"<{tag}.*?>(.*)</{tag}",re.S | re.M)
+            pat1 = re.compile(f"<{tag}.*?>(.*)</{tag}", re.S | re.M)
             result = pat1.search(text)
             if result:
                 groups = result.groups()
-                if isinstance(groups,str):
-                    record = (tag,groups)
+                if isinstance(groups, str):
+                    record = (tag, groups)
                     metadata.append(record)
                 else:
                     for group in groups:
-                        record = (tag,group)
+                        record = (tag, group)
                         metadata.append(record)
         self.metadata += metadata
 
-    def xpath_parse(self,opf):
+    def xpath_parse(self, opf):
         """
         Parse .opf file with xpath selectors.
 
@@ -134,15 +138,15 @@ class EpubMeta:
         """
         root = ET.fromstring(opf)
         ns = {
-            "dc" : "http://purl.org/dc/elements/1.1/",
-            "opf" : "http://www.idpf.org/2007/opf",
-            "xsi":"http://www.w3.org/2001/XMLSchema-instance",
-            "dcterms":"http://purl.org/dc/terms/",
+            "dc": "http://purl.org/dc/elements/1.1/",
+            "opf": "http://www.idpf.org/2007/opf",
+            "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+            "dcterms": "http://purl.org/dc/terms/",
         }
         metadata = []
         for tag in self.tags:
-            matches = root.findall(tag,ns)
-            records = [(tag,match.text) for match in matches]
+            matches = root.findall(tag, ns)
+            records = [(tag, match.text) for match in matches]
             metadata += records
         self.metadata += metadata
 
@@ -155,7 +159,7 @@ class EpubMeta:
         """
         self.metadata += path_meta(self.path)
         meta = {}
-        for k,v in self.metadata:
+        for k, v in self.metadata:
             if "dc:" in k:
                 k = k[3:]
             if k in meta:

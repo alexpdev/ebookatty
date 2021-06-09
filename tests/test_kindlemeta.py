@@ -23,6 +23,7 @@ from pathlib import Path
 from unittest import TestCase
 from ebookmeta.kindlemeta import KindleMeta
 
+
 class KindleTest(TestCase):
     """Unittests for primary metadata extractor."""
 
@@ -32,17 +33,16 @@ class KindleTest(TestCase):
         books = [i for i in path.iterdir() if i.suffix in [".azw3", ".azw", ".kfx"]]
         self.books = books
 
-
     def test_mobi_funcs(self):
         """Test KindleMeta Class."""
         for path in self.books:
-            self.assertIn(path.suffix,[".azw3",".azw",".kfx"])
+            self.assertIn(path.suffix, [".azw3", ".azw", ".kfx"])
             meta = KindleMeta(path)
             self.assertTrue(KindleMeta)
-            self.assertEqual(meta.suffix,path.suffix)
-            self.assertEqual(meta.stem,path.stem)
-            self.assertEqual(meta.name,path.name)
-            self.assertEqual(meta.data,path.read_bytes())
+            self.assertEqual(meta.suffix, path.suffix)
+            self.assertEqual(meta.stem, path.stem)
+            self.assertEqual(meta.name, path.name)
+            self.assertEqual(meta.data, path.read_bytes())
             self.assertTrue(meta.metadata)
             print(meta.palmheader)
             print(meta.palmname)
@@ -54,7 +54,7 @@ class KindleTest(TestCase):
             meta = KindleMeta(path)
             self.assertTrue(meta.path.exists())
             metadata = meta.get_metadata()
-            self.assertIn("filename",metadata)
-            self.assertIn("extension",metadata)
-            self.assertIn("size",metadata)
-            self.assertIn("path",metadata)
+            self.assertIn("filename", metadata)
+            self.assertIn("extension", metadata)
+            self.assertIn("size", metadata)
+            self.assertIn("path", metadata)

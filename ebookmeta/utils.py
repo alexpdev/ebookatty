@@ -1,31 +1,35 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
-##############################################################################
-#     Copyright (C) 2021  alexpdev
+########################################################################
+#  Copyright (C) 2021  alexpdev
 #
-#     This program is free software: you can redistribute it and/or modify
-#     it under the terms of the GNU Lesser General Public License as published by
-#     the Free Software Foundation, either version 3 of the License, or
-#     (at your option) any later version.
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-#     This program is distributed in the hope that it will be useful,
-#     but WITHOUT ANY WARRANTY; without even the implied warranty of
-#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#     GNU Lesser General Public License for more details.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-#     You should have received a copy of the GNU Lesser General Public License
-#     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ###############################################################################
-"""Parsing Utilities"""
+"""Parsing Utilities."""
 from pathlib import Path
+
 
 class HeaderMissingError(Exception):
     """Raise HeaderMissingError."""
+
     pass
+
 
 class MetadataError(HeaderMissingError):
     """Raise MetadataError."""
+
     pass
 
 
@@ -39,15 +43,16 @@ def path_meta(path):
     Returns:
         dict: key, value pairs of metadata parsed.
     """
-    if isinstance(path,str):
+    if isinstance(path, str):
         path = Path(path)
     metadata = [
-        ("filename" , path.name),
-        ("path" , str(path)),
+        ("filename", path.name),
+        ("path", str(path)),
         ("extension", path.suffix),
-        ("size", path.stat().st_size)
+        ("size", path.stat().st_size),
     ]
     return metadata
+
 
 def reverse_tag_iter(block):
     """
@@ -69,6 +74,7 @@ def reverse_tag_iter(block):
             break
         yield block[plt : pgt + 1]
         end = plt
+
 
 def getLanguage(langID, sublangID):
     """
@@ -102,7 +108,7 @@ def getLanguage(langID, sublangID):
             7: "ar-tn",
             14: "ar-ae",
             9: "ar-ye",
-        },# Arabic
+        },  # Arabic
         43: {0: "hy"},  # Armenian
         77: {0: "as"},  # Assamese
         44: {0: "az"},  # "Azeri (IANA: Azerbaijani)
@@ -111,11 +117,13 @@ def getLanguage(langID, sublangID):
         69: {0: "bn"},  # Bengali
         2: {0: "bg"},  # Bulgarian
         3: {0: "ca"},  # Catalan
-        4: {0: "zh", 3: "zh-hk", 2: "zh-cn", 4: "zh-sg", 1: "zh-tw"}, # Chinese
+        # Chinese
+        4: {0: "zh", 3: "zh-hk", 2: "zh-cn", 4: "zh-sg", 1: "zh-tw"},
         26: {0: "hr", 3: "sr"},  # Croatian, Serbian
         5: {0: "cs"},  # Czech
         6: {0: "da"},  # Danish
-        19: {0: "nl", 1: "nl", 2: "nl-be"},  # Dutch / Flemish,  Dutch (Belgium)
+        # Dutch / Flemish,  Dutch (Belgium)
+        19: {0: "nl", 1: "nl", 2: "nl-be"},
         9: {
             0: "en",
             1: "en",
@@ -131,7 +139,7 @@ def getLanguage(langID, sublangID):
             2: "en-gb",
             1: "en-us",
             12: "en-zw",
-        }, # English
+        },  # English
         37: {0: "et"},  # Estonian
         56: {0: "fo"},  # Faroese
         41: {0: "fa"},  # Farsi / Persian
@@ -144,9 +152,10 @@ def getLanguage(langID, sublangID):
             5: "fr-lu",
             6: "fr-mc",
             4: "fr-ch",
-        }, # French
+        },  # French
         55: {0: "ka"},  # Georgian
-        7: {0: "de", 1: "de", 3: "de-at", 5: "de-li", 4: "de-lu", 2: "de-ch"}, # German
+        # German
+        7: {0: "de", 1: "de", 3: "de-at", 5: "de-li", 4: "de-lu", 2: "de-ch"},
         8: {0: "el"},  # Greek, Modern (1453-)
         71: {0: "gu"},  # Gujarati
         13: {0: "he"},  # Hebrew (also code 'iw'?)
@@ -202,7 +211,7 @@ def getLanguage(langID, sublangID):
             80: "es-pr",
             56: "es-uy",
             32: "es-ve",
-        },# Spanish
+        },  # Spanish
         48: {0: "sx"},  # "Sutu" (not an IANA language code)
         65: {0: "sw"},  # Swahili
         29: {0: "sv", 1: "sv", 8: "sv-fi"},  # Swedish,  Swedish (Finland)

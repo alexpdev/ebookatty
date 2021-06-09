@@ -23,6 +23,7 @@ from pathlib import Path
 from unittest import TestCase
 from ebookmeta.ebookmeta import MetadataFetcher, get_metadata
 
+
 class EbookMetadataTest(TestCase):
     """Unittests for primary metadata extractor."""
 
@@ -30,17 +31,15 @@ class EbookMetadataTest(TestCase):
         """Assign variables used by all tests."""
         self.test_path = Path("./testbooks")
 
-
-
     def test_get_metadata(self):
         """Test get_metadata function."""
         for path in self.test_path.iterdir():
             metadata = get_metadata(path)
             self.assertTrue(metadata)
-            self.assertIn("filename",metadata)
-            self.assertIn("path",metadata)
-            self.assertIn("extension",metadata)
-            self.assertIn("size",metadata)
+            self.assertIn("filename", metadata)
+            self.assertIn("path", metadata)
+            self.assertIn("extension", metadata)
+            self.assertIn("size", metadata)
 
     def test_metadata_fetcher(self):
         """Test MetadataFetcher Class."""
@@ -48,17 +47,17 @@ class EbookMetadataTest(TestCase):
             meta = MetadataFetcher(path)
             metadata = meta.get_metadata()
             self.assertTrue(metadata)
-            self.assertIn("filename",metadata)
-            self.assertIn("path",metadata)
-            self.assertIn("extension",metadata)
-            self.assertIn("size",metadata)
+            self.assertIn("filename", metadata)
+            self.assertIn("path", metadata)
+            self.assertIn("extension", metadata)
+            self.assertIn("size", metadata)
 
     def test_metadata_get(self):
         """Test MetaDataFetcher.get method."""
         for path in self.test_path.iterdir():
             metadata = MetadataFetcher.get(path)
             self.assertTrue(metadata)
-            self.assertIn("filename",metadata)
-            self.assertIn("path",metadata)
-            self.assertIn("extension",metadata)
-            self.assertIn("size",metadata)
+            self.assertIn("filename", metadata)
+            self.assertIn("path", metadata)
+            self.assertIn("extension", metadata)
+            self.assertIn("size", metadata)

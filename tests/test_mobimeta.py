@@ -23,6 +23,7 @@ from pathlib import Path
 from unittest import TestCase
 from ebookmeta.mobimeta import MobiMeta
 
+
 class MobiTest(TestCase):
     """Unittests for primary metadata extractor."""
 
@@ -35,16 +36,15 @@ class MobiTest(TestCase):
     def test_mobi_funcs(self):
         """Test MobiMeta Class."""
         for path in self.books:
-            self.assertEqual(path.suffix,".mobi")
+            self.assertEqual(path.suffix, ".mobi")
             mobimeta = MobiMeta(path)
             self.assertTrue(MobiMeta)
-            self.assertEqual(mobimeta.suffix,path.suffix)
-            self.assertEqual(mobimeta.stem,path.stem)
-            self.assertEqual(mobimeta.name,path.name)
-            self.assertEqual(mobimeta.data,path.read_bytes())
+            self.assertEqual(mobimeta.suffix, path.suffix)
+            self.assertEqual(mobimeta.stem, path.stem)
+            self.assertEqual(mobimeta.name, path.name)
+            self.assertEqual(mobimeta.data, path.read_bytes())
             self.assertTrue(mobimeta.metadata)
             print(mobimeta.metadata)
-
 
     def test_metadata(self):
         """Test metadata extracted from MobiMeta Class"""
@@ -52,8 +52,8 @@ class MobiTest(TestCase):
             meta = MobiMeta(path)
             self.assertTrue(meta.path.exists())
             metadata = meta.get_metadata()
-            self.assertIn("filename",metadata)
-            self.assertIn("extension",metadata)
-            self.assertIn("path",metadata)
-            self.assertIn("size",metadata)
+            self.assertIn("filename", metadata)
+            self.assertIn("extension", metadata)
+            self.assertIn("path", metadata)
+            self.assertIn("size", metadata)
             print(metadata)

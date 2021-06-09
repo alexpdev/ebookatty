@@ -22,6 +22,7 @@ from pathlib import Path
 from unittest import TestCase
 from ebookmeta.epubmeta import EpubMeta
 
+
 class EpubTest(TestCase):
     """Unittests for primary metadata extractor."""
 
@@ -29,18 +30,16 @@ class EpubTest(TestCase):
         """Assign variables used by all tests."""
         self.test_path = Path("./testbooks")
 
-
-
     def test_epub_funcs(self):
         """Test EpubMeta Class."""
         for path in self.test_path.iterdir():
             if path.suffix == ".epub":
-                self.assertEqual(path.suffix,".epub")
+                self.assertEqual(path.suffix, ".epub")
                 meta = EpubMeta(path)
                 self.assertTrue(EpubMeta)
-                self.assertEqual(meta.suffix,path.suffix)
-                self.assertEqual(meta.stem,path.stem)
-                self.assertEqual(meta.name,path.name)
+                self.assertEqual(meta.suffix, path.suffix)
+                self.assertEqual(meta.stem, path.stem)
+                self.assertEqual(meta.name, path.name)
                 print(meta.metadata)
 
     def test_metadata(self):
@@ -50,8 +49,8 @@ class EpubTest(TestCase):
                 meta = EpubMeta(path)
                 self.assertTrue(meta.path.exists())
                 metadata = meta.get_metadata()
-                self.assertIn("filename",metadata)
-                self.assertIn("extension",metadata)
-                self.assertIn("size",metadata)
-                self.assertIn("path",metadata)
+                self.assertIn("filename", metadata)
+                self.assertIn("extension", metadata)
+                self.assertIn("size", metadata)
+                self.assertIn("path", metadata)
                 print(metadata)

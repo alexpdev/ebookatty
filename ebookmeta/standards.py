@@ -1,24 +1,23 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
+########################################################################
+#   Copyright (C) 2021  alexpdev
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##############################################################################
-#     Copyright (C) 2021  alexpdev
-#
-#     This program is free software: you can redistribute it and/or modify
-#     it under the terms of the GNU Lesser General Public License as published by
-#     the Free Software Foundation, either version 3 of the License, or
-#     (at your option) any later version.
-#
-#     This program is distributed in the hope that it will be useful,
-#     but WITHOUT ANY WARRANTY; without even the implied warranty of
-#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#     GNU Lesser General Public License for more details.
-#
-#     You should have received a copy of the GNU Lesser General Public License
-#     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-###############################################################################
-
-"""Standards, encodings and mappings used for metadata extracting and translating."""
+"""Standards, encodings and mappings used for metadata translating."""
 
 palmdoc_header = {
     "compression_type": (0x00, b">H", 2),
@@ -273,7 +272,8 @@ id_map_strings = {
     533: "Font_Converted",
     534: "Amazon_Creator_Info",
     535: "Creator-Build-Tag",
-    536: "HD-Media-Containers-Info",  # CONT_Header is 0, Ends with CONTAINER_BOUNDARY (or Asset_Type?)
+    # CONT_Header is 0, Ends with CONTAINER_BOUNDARY (or Asset_Type?)
+    536: "HD-Media-Containers-Info",
     538: "Resource-Container-Fidelity",
     539: "HD-Container-Mimetype",
     540: "Sample-For_Special-Purpose",
@@ -347,7 +347,6 @@ huffoff = 112
 hufftbloff = 120
 
 
-
 OPF_tags = [
     "metadata",
     "dc:title",
@@ -367,68 +366,86 @@ OPF_tags = [
     "author",
     "language",
     "description",
-    "subject"
+    "subject",
 ]
 EXTH_Types = {
-    1	:"drm_server_id",#
-    2	:"drm_commerce_id",#
-    3	:"drm_ebookbase_book_id",#
-    100	:"author",#		<dc:Creator>
-    101	:"publisher",#		<dc:Publisher>
-    102	:"imprint",#		<Imprint>
-    103	:"description",#		<dc:Description>
-    104	:"isbn",#		<dc:Identifier scheme='ISBN'>
-    105	:"subject",#	Could appear multiple times	<dc:Subject>
-    106	:"publishingdate",#		<dc:Date>
-    107	:"review",#		<Review>
-    108	:"contributor",#		<dc:Contributor>
-    109	:"rights",#		<dc:Rights>
-    110	:"subjectcode",#		<dc:Subject BASICCode="subjectcode">
-    111	:"type",#		<dc:Type>
-    112	:"source",#		<dc:Source>
-    113	:"asin",#	Kindle Paperwhite labels books with "Personal" if they don't have this record.
-    114	:"versionnumber",#
-    115	:"sample",#	0x0001 if the book content is only a sample of the full book
-    116	:"startreading",#	Position (4-byte offset) in file at which to open when first opened
-    117	:"adult",#	Mobipocket Creator adds this if Adult only is checked on its GUI; contents: "yes"	<Adult>
-    118	:"retail",# price	As text, e.g. "4.99"	<SRP>
-    119	:"retail",# price currency	As text, e.g. "USD"	<SRP Currency="currency">
-    121	:"KF8",# BOUNDARY Offset
-    125	:"count",# of resources
-    129	:"KF8",# cover URI
-    131	:"Unknown",#
-    200	:"Dictionary",# short name	As text	<DictionaryVeryShortName>
-    201	:"coveroffset",#	Add to first image field in Mobi Header to find PDB record containing the cover image	<EmbeddedCover>
-    202	:"thumboffset",#	Add to first image field in Mobi Header to find PDB record containing the thumbnail cover image
-    203	:"hasfakecover",#
-    204	:"Creator",# Software	Known Values: 1=mobigen, 2=Mobipocket Creator, 200=kindlegen (Windows), 201=kindlegen (Linux), 202=kindlegen (Mac).
-    205	:"Creator",# Major Version
-    206	:"Creator",# Minor Version
-    207	:"Creator",# Build Number
-    208	:"watermark",#
-    209	:"tamper",# proof keys	Used by the Kindle (and Android app) for generating book-specific PIDs.
-    300	:"fontsignature",#
-    401	:"clippinglimit",#	Integer percentage of the text allowed to be clipped. Usually 10.
-    402	:"publisherlimit",#
-    403	:"Unknown",#
-    404	:"ttsflag",#	1 - Text to Speech disabled; 0 - Text to Speech enabled
-    405	:"Unknown",# (Rent/Borrow flag?)	1 in this field seems to indicate a rental book
-    406	:"Rent",#/Borrow Expiration Date	If this field is removed from a rental, the book says it expired in 1969
-    407	:"Unknown",#
-    450	:"Unknown",#
-    451	:"Unknown",#
-    452	:"Unknown",#
-    453	:"Unknown",#
-    501	:"cdetype",#	PDOC - Personal Doc; EBOK - ebook; EBSP - ebook sample;
-    502	:"lastupdatetime",#
-    503	:"updatedtitle",#
-    504	:"asin",#	I found a copy of ASIN in this record.
-    524	:"language",#		<dc:language>
-    525	:"writingmode",#	I found horizontal-lr in this record.
-    535	:"Creator",# Build Number	I found 1019-d6e4792 in this record, which is a build number of Kindlegen 2.7
-    536	:"Unknown",#
-    542	:"Unknown",#	Some Unix timestamp.
-    547	:"InMemory",#	String 'I\x00n\x00M\x00e\x00m\x00o\x00r\x00y\x00' found in this record, for KindleGen V2.9 build 1029-0897292
+    1: "drm_server_id",
+    2: "drm_commerce_id",
+    3: "drm_ebookbase_book_id",
+    100: "author",  # <dc:Creator>
+    101: "publisher",  # <dc:Publisher>
+    102: "imprint",  # <Imprint>
+    103: "description",  # <dc:Description>
+    104: "isbn",  # <dc:Identifier scheme='ISBN'>
+    105: "subject",  # Could appear multiple times	<dc:Subject>
+    106: "publishingdate",  # <dc:Date>
+    107: "review",  # <Review>
+    108: "contributor",  # <dc:Contributor>
+    109: "rights",  # <dc:Rights>
+    110: "subjectcode",  # <dc:Subject BASICCode="subjectcode">
+    111: "type",  # <dc:Type>
+    112: "source",  # <dc:Source>
+    113: "asin",  # Kindle Paperwhite labels books with "Personal"
+    114: "versionnumber",
+    115: "sample",  # 0x0001 if the book content is only a sample
+    116: "startreading",  # Position (4-byte offset) in file when first opened
+    # Mobipocket Creator adds this if Adult only is checked on its
+    # GUI; contents: "yes"	<Adult>
+    117: "adult",
+    118: "retail",  # price	As text, e.g. "4.99"	<SRP>
+    119: "retail",  # price currency As text, e.g. "USD"
+    121: "KF8",  # BOUNDARY Offset
+    125: "count",  # of resources
+    129: "KF8",  # cover URI
+    131: "Unknown",
+    200: "Dictionary",  # short name	As text	<DictionaryVeryShortName>
+    # Add to first image field in Mobi Header to find PDB record
+    # containing the cover image	<EmbeddedCover>
+    201: "coveroffset",
+    # Add to first image field in Mobi Header to find PDB record
+    # containing the thumbnail cover image
+    202: "thumboffset",
+    203: "hasfakecover",
+    # Software	Known Values: 1=mobigen, 2=Mobipocket Creator,
+    # 200=kindlegen (Windows), 201=kindlegen (Linux), 202=kindlegen (Mac).
+    204: "Creator",
+    205: "Creator",  # Major Version
+    206: "Creator",  # Minor Version
+    207: "Creator",  # Build Number
+    208: "watermark",
+    # proof keys Used by the Kindle (and Android app) for generating
+    # book-specific PIDs.
+    209: "tamper",
+    300: "fontsignature",
+    # Integer percentage of the text allowed to be clipped. Usually 10.
+    401: "clippinglimit",
+    402: "publisherlimit",
+    403: "Unknown",
+    404: "ttsflag",  # 1 - Text to Speech disabled; 0 - Text to Speech enabled
+    # (Rent/Borrow flag?)	1 in this field seems to indicate a rental book
+    405: "Unknown",
+    # /Borrow Expiration Date	If this field is removed
+    # from a rental, the book says it expired in 1969
+    406: "Rent",
+    407: "Unknown",
+    450: "Unknown",
+    451: "Unknown",
+    452: "Unknown",
+    453: "Unknown",
+    501: "cdetype",  # PDOC - Personal Doc; EBOK - ebook; EBSP - ebook sample;
+    502: "lastupdatetime",
+    503: "updatedtitle",
+    504: "asin",  # I found a copy of ASIN in this record.
+    524: "language",  # <dc:language>
+    525: "writingmode",  # I found horizontal-lr in this record.
+    # Build Number	I found 1019-d6e4792 in this record,
+    # which is a build number of Kindlegen 2.7
+    535: "Creator",
+    536: "Unknown",
+    542: "Unknown",  # Some Unix timestamp.
+    # String 'I\x00n\x00M\x00e\x00m\x00o\x00r\x00y\x00' found
+    # in this record, for KindleGen V2.9 build 1029-0897292
+    547: "InMemory",
 }
 
 META_TAGS = [

@@ -1,33 +1,36 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
-##############################################################################
-#     Copyright (C) 2021  alexpdev
+########################################################################
+#  Copyright (C) 2021  alexpdev
 #
-#     This program is free software: you can redistribute it and/or modify
-#     it under the terms of the GNU Lesser General Public License as published by
-#     the Free Software Foundation, either version 3 of the License, or
-#     (at your option) any later version.
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
 #
-#     This program is distributed in the hope that it will be useful,
-#     but WITHOUT ANY WARRANTY; without even the implied warranty of
-#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#     GNU Lesser General Public License for more details.
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
 #
-#     You should have received a copy of the GNU Lesser General Public License
-#     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-###############################################################################
-"""Module contains implementation specific to amazon formatted ebooks. """
+#  You should have received a copy of the GNU Lesser General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#########################################################################
+"""
+Module contains implementation specific to amazon formatted ebooks.
 
+Classes and functions for .azw, .azw3, and .kfx ebooks.
+"""
 import struct
 from pathlib import Path
 from ebookmeta.utils import MetadataError, HeaderMissingError, path_meta
 
+
 class KindleMeta:
-    """Gather Epub Metadata. """
+    """Gather Epub Metadata."""
 
-
-    def __init__(self,path):
+    def __init__(self, path):
         """
         Construct the EpubMeta Class Instance.
 
@@ -44,7 +47,7 @@ class KindleMeta:
         self.metadata = []
         self.find_metadata()
 
-    def unShort(self,x):
+    def unShort(self, x):
         """
         Convert bits to text.
 
@@ -58,7 +61,7 @@ class KindleMeta:
         val = struct.unpack_from(">H", buffer, x)
         return val
 
-    def unLongx(self,total,x):
+    def unLongx(self, total, x):
         """
         Convert bits to text.
 
@@ -70,21 +73,21 @@ class KindleMeta:
             str: decoded bytes
         """
         buffer = self.data
-        form = ">" + ("L"*total)
+        form = ">" + ("L" * total)
         val = struct.unpack_from(form, buffer, x)
         return val
 
     def find_metadata(self):
-        """ Find the offset to the EXTH header """
-        offset = self.data.find(b'EXTH')
+        """Find the offset to the EXTH header."""
+        offset = self.data.find(b"EXTH")
         if offset < 0:
             raise HeaderMissingError(self.path)
-        _,headLen,recCount = self.unLongx(3,offset)
+        _, headLen, recCount = self.unLongx(3, offset)
         offset += 12
         for _ in range(recCount):
-            id, size = self.unLongx(2,offset)
+            id, size = self.unLongx(2, offset)
             content = self.data[offset + 8 : offset + size]
-            record = (id , content)
+            record = (id, content)
             self.metadata.append(record)
             offset += size
         if len(self.metadata) < 1:
@@ -99,8 +102,8 @@ class KindleMeta:
         """
         meta = {}
         self.metadata += path_meta(self.path)
-        for k,v in self.metadata:
-            if hasattr(v,"decode"):
+        for k, v in self.metadata:
+            if hasattr(v, "decode"):
                 v = v.decode(errors="replace")
             if k in self.types:
                 type_ = self.types[k]
