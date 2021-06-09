@@ -1,17 +1,40 @@
-import sys
+#! /usr/bin/python3
+# -*- coding: utf-8 -*-
+
+##############################################################################
+#     Copyright (C) 2021  alexpdev
+#
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU Lesser General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU Lesser General Public License for more details.
+#
+#     You should have received a copy of the GNU Lesser General Public License
+#     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+###############################################################################
+"""Tests for MobiMeta module."""
+
+from pathlib import Path
 from unittest import TestCase
-from os.path import abspath,dirname
-sys.path.append(dirname(dirname(abspath(__file__))))
-from data.paths import MOBI_BOOKS
-from ebook_meta.mobimeta import MobiMeta
+from ebookmeta.mobimeta import MobiMeta
 
 class MobiTest(TestCase):
+    """Unittests for primary metadata extractor."""
 
     def setUp(self):
-        self.pathiter = MOBI_BOOKS
+        """Assign variables used by all tests."""
+        path = Path("./testbooks")
+        books = [i for i in path.iterdir() if i.suffix == ".mobi"]
+        self.books = books
 
     def test_mobi_funcs(self):
-        for path in self.pathiter:
+        """Test MobiMeta Class."""
+        for path in self.books:
             self.assertEqual(path.suffix,".mobi")
             mobimeta = MobiMeta(path)
             self.assertTrue(MobiMeta)
@@ -24,8 +47,8 @@ class MobiTest(TestCase):
 
 
     def test_metadata(self):
-        for path in self.pathiter:
-            path = abspath(path)
+        """Test metadata extracted from MobiMeta Class"""
+        for path in self.books:
             meta = MobiMeta(path)
             self.assertTrue(meta.path.exists())
             metadata = meta.get_metadata()
