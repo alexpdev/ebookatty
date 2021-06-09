@@ -1,5 +1,5 @@
 {
-  "name": "ebookmeta",
+  "name": "ebookmeta-aspdev",
   "displayName": "Ebook Metadata",
   "version": "0.2.0",
   "description": "Tools for extracting Metadata from EPUB MOBI and other kindle formats",

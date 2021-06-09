@@ -16,7 +16,7 @@ info = json.load(open("package.json"))
 long_description = open("README.md",encoding="utf-8").read()
 
 setup(
-    name="ebookmeta",
+    name=info["name"],
     version=info["version"],
     description=info["description"],
     long_description=long_description,
