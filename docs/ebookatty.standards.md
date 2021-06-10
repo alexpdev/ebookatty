@@ -2,7 +2,7 @@
 
 <a href="..\ebookatty\standards.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
-# <kbd>module</kbd> `standards`
+# <kbd>module</kbd> `ebookatty.standards`
 Standards, encodings and mappings used for metadata translating. 
 
 **Global Variables**

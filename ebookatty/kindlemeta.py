@@ -108,7 +108,7 @@ class KindleMeta:
         for k, v in self.metadata:
             if hasattr(v, "decode"):
                 v = v.decode(errors="replace")
-            if k in self.EXTH_Types:
+            if k in EXTH_Types:
                 type_ = EXTH_Types[k]
                 if type_ not in meta:
                     meta[type_] = [v]

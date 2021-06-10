@@ -8,6 +8,13 @@
 
 Simple utility that extracts embedded metadata in common ebook formats. Works on mobi epub and most amazon kindle filetypes.
 Includes a library of classes and functions for dealing with metadata, as well as a CLI to use as a standalone tool.
+It is still a work in progress.
+
+## Features
+
+* succesfully extracts metadata from .mobi .kfx .epub .azw .azw3 file formats
+* Extremely simple
+* requires no external dependencies
 
 ## Requirements
 
@@ -27,7 +34,7 @@ pip install ebookatty-alexpdev
 Using as a command line interface is super easy:
 
 ```Linux
-ebookatty -d path/to/ebooks.mobie
+ebookatty path/to/ebook.epub
 ```
 
 or import into your project...

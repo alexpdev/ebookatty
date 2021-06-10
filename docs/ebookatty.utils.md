@@ -2,7 +2,7 @@
 
 <a href="..\ebookatty\utils.py#L0"><img align="right" style="float:right;" src="https://img.shields.io/badge/-source-cccccc?style=flat-square"></a>
 
-# <kbd>module</kbd> `utils`
+# <kbd>module</kbd> `ebookatty.utils`
 Parsing Utilities. 
 
 
