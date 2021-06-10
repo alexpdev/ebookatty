@@ -22,7 +22,7 @@
 from pathlib import Path
 from unittest import TestCase
 
-from ebookmeta.mobimeta import MobiMeta
+from ebookatty.mobimeta import MobiMeta
 
 
 class MobiTest(TestCase):

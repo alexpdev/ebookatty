@@ -5,11 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: ebookmeta",
+      "name": "Python: ebookatty",
       "type": "python",
       "request": "launch",
       "cwd": "${workspaceFolder}",
-      "module": "ebookmeta",
+      "module": "ebookatty",
       "console": "integratedTerminal"
     },
   ]

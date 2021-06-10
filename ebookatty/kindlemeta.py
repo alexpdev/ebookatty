@@ -25,7 +25,9 @@ Classes and functions for .azw, .azw3, and .kfx ebooks.
 import struct
 from pathlib import Path
 
-from ebookmeta.utils import HeaderMissingError, MetadataError, path_meta
+from ebookatty.utils import HeaderMissingError, MetadataError, path_meta
+from ebookatty.standards import EXTH_Types
+
 
 
 class KindleMeta:
@@ -106,8 +108,8 @@ class KindleMeta:
         for k, v in self.metadata:
             if hasattr(v, "decode"):
                 v = v.decode(errors="replace")
-            if k in self.types:
-                type_ = self.types[k]
+            if k in self.EXTH_Types:
+                type_ = EXTH_Types[k]
                 if type_ not in meta:
                     meta[type_] = [v]
                 else:

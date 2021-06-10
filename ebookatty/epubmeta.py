@@ -28,8 +28,8 @@ import zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
-from ebookmeta.standards import _OPF_PARENT_TAGS
-from ebookmeta.utils import MetadataError, path_meta
+from ebookatty.standards import _OPF_PARENT_TAGS
+from ebookatty.utils import MetadataError, path_meta
 
 
 class EpubMeta:

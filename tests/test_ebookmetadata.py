@@ -17,15 +17,15 @@
 #     You should have received a copy of the GNU Lesser General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ###############################################################################
-"""Tests for ebookmeta package."""
+"""Tests for ebookatty package."""
 
 from pathlib import Path
 from unittest import TestCase
 
-from ebookmeta.ebookmeta import MetadataFetcher, get_metadata
+from ebookatty.atty import MetadataFetcher, get_metadata
 
 
-class EbookMetadataTest(TestCase):
+class ebookattydataTest(TestCase):
     """Unittests for primary metadata extractor."""
 
     def setUp(self):

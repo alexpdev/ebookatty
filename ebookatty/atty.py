@@ -20,15 +20,15 @@
 """
 Metadata Parsing and extracting from ebook files.
 
-ebookmeta module.
+ebookatty module.
 """
 import sys
 from argparse import ArgumentParser
 from pathlib import Path
 
-from ebookmeta.epubmeta import EpubMeta
-from ebookmeta.kindlemeta import KindleMeta
-from ebookmeta.mobimeta import MobiMeta
+from ebookatty.epubmeta import EpubMeta
+from ebookatty.kindlemeta import KindleMeta
+from ebookatty.mobimeta import MobiMeta
 
 
 class PathDoesNotExistError(Exception):
@@ -51,7 +51,6 @@ class UnsupportedFormatError(Exception):
     """
 
     pass
-
 
 class MetadataFetcher:
     """Primary Entrypoint for extracting metadata from most ebook filetypes."""
@@ -151,18 +150,3 @@ def format_output(book):
                 longest_line = len(line)
     output += "-" * longest_line + "\n"
     return output
-
-
-def cliparse():
-    """Parse STDIN for CLI input."""
-    parser = ArgumentParser(description="get ebook metadata")
-    parser.add_argument("-f", "--file", nargs="+", help="path to ebook")
-    parser.add_argument(
-        "-d", "--directory", action="append", help="path to ebooks directory"
-    )
-    paths = parser.parse_args(sys.argv[1:])
-    if paths.directory:
-        d = [Path(i) for i in paths.directory]
-        for path in d:
-            for item in path.iterdir():
-                print(format_output(get_metadata(item)))

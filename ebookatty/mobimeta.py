@@ -25,7 +25,8 @@ Classes and functions for .mobi ebooks.
 import struct
 from pathlib import Path
 
-from ebookmeta.utils import HeaderMissingError, MetadataError, path_meta
+from ebookatty.utils import HeaderMissingError, MetadataError, path_meta
+from ebookatty.standards import EXTH_Types
 
 
 class MobiMeta:
@@ -115,8 +116,8 @@ class MobiMeta:
         for k, v in self.metadata:
             if hasattr(v, "decode"):
                 v = v.decode(errors="replace")
-            if k in self.types:
-                type_ = self.types[k]
+            if k in EXTH_Types:
+                type_ = EXTH_Types[k]
                 if type_ not in meta:
                     meta[type_] = [v]
                 else:

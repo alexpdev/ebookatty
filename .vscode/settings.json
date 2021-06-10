@@ -8,7 +8,8 @@
     ],
     "python.testing.pytestEnabled": false,
     "python.testing.nosetestsEnabled": false,
-    "python.testing.unittestEnabled": true,
+    "python.testing.unittestEnabled": false,
     "python.testing.cwd": "${workspaceFolder}",
     "terminal.integrated.cwd": "${workspaceFolder}",
+    "python.testing.promptToConfigure": false,
 }

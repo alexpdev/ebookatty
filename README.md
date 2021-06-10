@@ -1,4 +1,4 @@
-# Ebook_Metadata
+# ebookatty
 
 ![License](https://img.shields.io/badge/License-LGPL-blue?style=for-the-badge&logo=appveyor)
 ![Testing](https://img.shields.io/badge/Testing-Pytest-orange?style=for-the-badge&logo=appveyor)
@@ -18,23 +18,22 @@ Includes a library of classes and functions for dealing with metadata, as well a
 
 ## Installing
 
-```Linux:
-pip install ebook_metadata-alexpdev
+```Linux
+pip install ebookatty-alexpdev
 ```
 
 ## Instructions
 
 Using as a command line interface is super easy:
 
-```Bash
-cd "Project Directory"
-python3 pybook_metadata.py [-f/--file "ebook.mobi"] [-d ["ebookfolder/"]]
+```Linux
+ebookatty -d path/to/ebooks.mobie
 ```
 
 or import into your project...
 
 ```python
-from pybook_metadata import get_metadata, MetadataFetcher
+from ebookatty import get_metadata, MetadataFetcher
 ```
 
 [Github-flavored Markdown](https://guides.github.com/features/mastering-markdown/)
