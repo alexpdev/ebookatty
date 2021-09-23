@@ -4,12 +4,11 @@
         "-s",
         "./tests",
         "-p",
-        "test_*.py"
+        "test*.py"
     ],
     "python.testing.pytestEnabled": false,
     "python.testing.nosetestsEnabled": false,
-    "python.testing.unittestEnabled": false,
+    "python.testing.unittestEnabled": true,
     "python.testing.cwd": "${workspaceFolder}",
     "terminal.integrated.cwd": "${workspaceFolder}",
-    "python.testing.promptToConfigure": false,
 }

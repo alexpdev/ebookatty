@@ -1,7 +1,5 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
-"""ebookatty __main__ CLI interface."""
-
 
 ########################################################################
 #  Copyright (C) 2021  alexpdev
@@ -19,14 +17,16 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #########################################################################
+"""EbookData __main__ CLI interface."""
 
 
+import sys
 from argparse import ArgumentParser
-from ebookatty.atty import get_metadata
+from ebookatty import get_metadata
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="get ebook metadata")
 
     parser.add_argument('path', type=str,help='path to ebook file')
-    args = parser.parse_args()
+    args = parser.parse_args(sys.argv[1:])
     print(get_metadata(args.path))
