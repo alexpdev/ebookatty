@@ -1,20 +1,12 @@
 {
   "name": "ebookatty",
   "displayName": "ebookatty",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Tools for extracting Metadata from EPUB MOBI and other kindle formats",
   "longDescription": "Default long description",
   "categories": [
     "Other"
   ],
-  "main": "index.html",
-  "scripts": {
-    "test": "echo test",
-    "start": "echo start",
-    "dev": "echo dev",
-    "run": "echo run",
-    "build": "echo build"
-  },
   "keywords": ["ebook","metadata","mobi","epub"],
   "author": "alexpdev",
   "url": "https://github.com/alexpdev/ebookatty",
