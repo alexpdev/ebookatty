@@ -325,6 +325,7 @@ class MetadataFetcher:
         """
         meta = cls(path)
         metadata = meta.get_metadata()
+        print(format_output(metadata))
         return metadata
 
 
@@ -374,9 +375,10 @@ def format_output(book):
             line = (" " * extra_spaces) + "\t" + str(book[field][0]) + "\n"
             line = field.title() + line
             output += line
-            if len(line) > longest_line:
-                longest_line = len(line)
+            if len(line) + 1 > longest_line:
+                longest_line = len(line) + 1
     output += "-" * longest_line + "\n"
+    output = "-" * longest_line + "\n" + output
     return output
 
 

@@ -37,6 +37,7 @@ setup(
     keywords=info["keywords"],
     author=info["author"],
     author_email=info["email"],
+    entry_points={"console_scripts": ["ebookatty = ebookatty.__main__:main"]},
     url=info["url"],
     project_urls={"Source Code": "https://github.com/alexpdev/ebookatty"},
     license=info["license"],

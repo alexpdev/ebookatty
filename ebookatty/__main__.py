@@ -24,9 +24,12 @@ import sys
 from argparse import ArgumentParser
 from ebookatty import get_metadata
 
-if __name__ == "__main__":
+def main():
     parser = ArgumentParser(description="get ebook metadata")
-
     parser.add_argument('path', type=str,help='path to ebook file')
     args = parser.parse_args(sys.argv[1:])
-    print(get_metadata(args.path))
+    get_metadata(args.path)
+
+
+if __name__ == "__main__":
+    main()

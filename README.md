@@ -19,14 +19,12 @@ It is still a work in progress.
 ## Requirements
 
 * Python 3.3+
-* pip
 * Tested on Windows and Linux
-* pytest for unittesting source
 
 ## Installing
 
 ```Linux
-pip install ebookatty-alexpdev
+pip install ebookatty
 ```
 
 ## Instructions
@@ -43,21 +41,7 @@ or import into your project...
 from ebookatty import get_metadata, MetadataFetcher
 ```
 
-[Github-flavored Markdown](https://guides.github.com/features/mastering-markdown/)
-
 ## License / EULA
 
 GNU LGPL v3.0
 [LICENSE FILE](./LICENSE.md)
-
-## ChangeLog
-
-> version 0.1 core source code.
-> version 0.2 capable of importing as external library
-
-## TODO
-
-* Work on CLI
-* Include cover art location as a field
-* Include optional table of contents as field
-* I may decide to expand it to allow editing the metadata as well
