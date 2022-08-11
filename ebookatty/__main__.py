@@ -17,21 +17,15 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #########################################################################
-"""EbookData __main__ CLI interface."""
+"""Entry point module."""
 
 
-import sys
-from argparse import ArgumentParser
-from ebookatty import get_metadata
+from ebookatty.cli import execute
+
 
 def main():
-    parser = ArgumentParser(description="get ebook metadata")
-    parser.add_argument('file', type=str, help='path to ebook file(s), standard file pattern extensions are allowed.', nargs="+")
-    parser.add_argument('-r', '--recursive', help='recusively search for given file patterns')
-    parser.add_argument('-o', '--output', help='file path where metadata will be written. Acceptable formats include json and csv and are determined based on the file extension. Default is None', action="store")
-    args = parser.parse_args(sys.argv[1:])
-
-    get_metadata(args.path)
+    """Entry Point for program."""
+    execute()
 
 
 if __name__ == "__main__":

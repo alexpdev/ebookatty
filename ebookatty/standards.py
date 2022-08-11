@@ -480,3 +480,47 @@ _OPF_PARENT_TAGS = [
     "tours",
     "guide",
 ]
+
+
+language = {
+    1: {
+        0: "en",
+        1: "en",
+        2: "en-au",
+        3: "en-bz",
+        4: "en-ca",
+        5: "en-ie",
+        6: "en-jm",
+        7: "en-nz",
+        8: "en-ph",
+        9: "en-za",
+        10: "en-tt",
+        11: "en-gb",
+        12: "en-us",
+        13: "en-zw",
+    },  # English
+    2: {0: "it", 1: "it", 2: "it-ch"},  # Italian,  Italian (Switzerland)
+    3: {0: "pt", 1: "pt", 2: "pt-br"},  # Portuguese,  Portuguese (Brazil)
+    4: {
+        1: "es",
+        2: "es",
+        3: "es-ar",
+        4: "es-bo",
+        5: "es-cl",
+        6: "es-co",
+        7: "es-cr",
+        8: "es-do",
+        9: "es-ec",
+        10: "es-sv",
+        11: "es-gt",
+        12: "es-hn",
+        13: "es-mx",
+        14: "es-ni",
+        15: "es-pa",
+        16: "es-py",
+        17: "es-pe",
+        18: "es-pr",
+        19: "es-uy",
+        20: "es-ve",
+    }
+}

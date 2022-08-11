@@ -16,3 +16,6 @@ test : clean ## Run Unittests
 	coverage xml -o coverage.xml
 	coverage html
 	coverage report
+
+install : clean  ## Install package in editable mode
+	pip install -e .

@@ -28,8 +28,7 @@ import struct
 import zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
-from ebookatty.standards import _OPF_PARENT_TAGS
-from ebookatty.standards import EXTH_Types
+from ebookatty.standards import EXTH_Types, language, _OPF_PARENT_TAGS
 
 class Kindle:
     """Gather Epub Metadata."""
@@ -448,51 +447,9 @@ def getLanguage(langID, sublangID):
     Returns:
         str: Language encoding.
     """
-    langdict = {
-        9: {
-            0: "en",
-            1: "en",
-            3: "en-au",
-            40: "en-bz",
-            4: "en-ca",
-            6: "en-ie",
-            8: "en-jm",
-            5: "en-nz",
-            13: "en-ph",
-            7: "en-za",
-            11: "en-tt",
-            2: "en-gb",
-            1: "en-us",
-            12: "en-zw",
-        },  # English
-        16: {0: "it", 1: "it", 2: "it-ch"},  # Italian,  Italian (Switzerland)
-        22: {0: "pt", 2: "pt", 1: "pt-br"},  # Portuguese,  Portuguese (Brazil)
-        10: {
-            0: "es",
-            4: "es",
-            44: "es-ar",
-            64: "es-bo",
-            52: "es-cl",
-            36: "es-co",
-            20: "es-cr",
-            28: "es-do",
-            48: "es-ec",
-            68: "es-sv",
-            16: "es-gt",
-            72: "es-hn",
-            8: "es-mx",
-            76: "es-ni",
-            24: "es-pa",
-            60: "es-py",
-            40: "es-pe",
-            80: "es-pr",
-            56: "es-uy",
-            32: "es-ve",
-        },  # Spanish
-    }
     sublangID = 0 if not sublangID else sublangID
     try:
-        lang = langdict[langID][sublangID]
+        lang = language[langID][sublangID]
     except KeyError:
         lang = "en"
     return lang
