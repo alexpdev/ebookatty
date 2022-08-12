@@ -52,5 +52,25 @@ def execute():
         if path.suffix == ".json":
             json.dump(datas, open(path,"wt"))
         elif path.suffix == ".csv":
-            writer = csv.writer(open(path, "wt"))
-            writer.writerows(datas)
+            d = set()
+            for row in datas:
+                for key in row.keys():
+                    d.add(key)
+            headers = list(d)
+            layers = [headers]
+            for row in datas:
+                layer = []
+                for header in headers:
+                    record = row.get(header, "")
+                    if isinstance(record, list):
+                        record = record[0]
+                    if isinstance(record, int):
+                        record = str(record)
+                    if isinstance(record, bytes):
+                        record = str(record[0], encoding="utf-8", errors="ignore")
+                    layer.append(record)
+                layers.append(layer)
+            print(layers)
+            with open(path, "wt", encoding="utf-8", errors="ignore") as fd:
+                for layer in layers:
+                    fd.write(",".join(layer) + "\n")

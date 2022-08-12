@@ -56,7 +56,6 @@ def test_cli(testdir, flag, outdir, pattern, ext):
         out = os.path.join(outdir, "outfile" + ext)
         args += [flag, out]
         print(args)
-
     sys.argv = args
     print(sys.argv)
     execute()
