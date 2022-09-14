@@ -21,7 +21,8 @@
 #########################################################################
 
 from ebookatty.metadata import get_metadata, MetadataFetcher
+from ebookatty.cli import execute
 
 __version__ = "0.3.0"
 
-__all__ = ["MetadataFetcher", "get_metadata"]
+__all__ = ["MetadataFetcher", "get_metadata", "execute"]

@@ -128,7 +128,7 @@ class EXTHHeader:
 
     def process_metadata(self, idx, content, codec):
         if idx == 100:
-            if self.mi.is_null('authors'):
+            if not self.mi.authors:
                 self.mi.authors = []
             au = self.decode(content).strip()
             m = re.match(r'([^,]+?)\s*,\s+([^,]+)$', au.strip())
@@ -211,7 +211,7 @@ class BookHeader:
             self.mobi_version = 1
         else:
             self.ancient = False
-            self.doctype = raw[16:20]
+            self.doctype = raw[16:20].decode()
             self.length, self.type, self.codepage, self.unique_id, \
                 self.version = struct.unpack('>LLLLL', raw[20:40])
 
@@ -310,7 +310,7 @@ class MetadataHeader(BookHeader):
         ident = self.stream.read(8).upper()
         if ident not in (b'BOOKMOBI', b'TEXTREAD'):
             raise Exception
-        return ident
+        return ident.decode()
 
     def section_count(self):
         self.stream.seek(76)
@@ -367,8 +367,8 @@ class Kindle:
         self.num_sections = self.section_count()
         self.palmheader = self.data[:78]
         self.palmname = self.data[:32]
-        self.metadata = []
-        self.find_metadata()
+        self.header = MetadataHeader(self.stream)
+        self.metadata = self.find_metadata()
 
     def identity(self):
         self.stream.seek(60)
@@ -415,15 +415,21 @@ class Kindle:
         return val
 
     def find_metadata(self):
-        header = MetadataHeader(self.stream)
         meta = {}
-        for k,v in header.__dict__.items():
+        for k,v in self.header.__dict__.items():
             if v:
-                meta[k] = v
-        for k,v in header.exth.mi.__dict__.items():
+                if not isinstance(v, list):
+                    meta[k] = [v]
+                else:
+                    meta[k] = v
+        for k,v in self.header.exth.mi.__dict__.items():
             if v:
-                meta[k] = v
-        for key in ['stream', 'exth']:
+                if not isinstance(v, list):
+                    meta[k] = [v]
+                else:
+                    meta[k] = v
+
+        for key in ['stream', 'exth', 'compression_type']:
             del meta[key]
         return meta
 
@@ -615,7 +621,11 @@ class MetadataFetcher:
         Returns:
             dict: Metadata keys and values embedded in the file.
         """
-        return self.meta.get_metadata()
+        try:
+            data = self.meta.get_metadata()
+        except:
+            data = self.meta.metadata
+        return data
 
     @classmethod
     def get(cls, path):
