@@ -86,40 +86,21 @@ class EXTHHeader:
             elif idx == 202:
                 self.thumbnail_offset, = struct.unpack('>L', content)
             elif idx == 501:
-                try:
-                    self.cdetype = content.decode('ascii')
-                except UnicodeDecodeError:
-                    self.cdetype = None
-                if content == b'EBSP':
-                    if not self.mi.tags:
-                        self.mi.tags = []
-                    self.mi.tags.append('Sample Book')
+                self.cdetype = content.decode('ascii')
             elif idx == 503:
-                try:
-                    title = content.decode(codec)
-                except UnicodeDecodeError:
-                    pass
+                title = content.decode(codec)
             elif idx == 524:
-                try:
-                    lang = content.decode(codec)
-                    if lang:
-                        self.mi.language = lang
-                except UnicodeDecodeError:
-                    pass
+                lang = content.decode(codec)
+                if lang:
+                    self.mi.language = lang
             elif idx == 525:
-                try:
-                    pwm = content.decode(codec)
-                    if pwm:
-                        self.primary_writing_mode = pwm
-                except Exception:
-                    pass
+                pwm = content.decode(codec)
+                if pwm:
+                    self.primary_writing_mode = pwm
             elif idx == 527:
-                try:
-                    ppd = content.decode(codec)
-                    if ppd:
-                        self.page_progression_direction = ppd
-                except Exception:
-                    pass
+                ppd = content.decode(codec)
+                if ppd:
+                    self.page_progression_direction = ppd
         if title:
             self.mi.title = title
 
@@ -254,11 +235,8 @@ class BookHeader:
                     self.exth = EXTHHeader(raw[16 + self.length:], self.codec,
                             self.title)
                     self.exth.mi.uid = self.unique_id
-                    if self.exth.mi.is_null('language'):
-                        try:
-                            self.exth.mi.language = langid
-                        except:
-                            pass
+                    if not self.exth.mi.language:
+                        self.exth.mi.language = langid
                 except:
                     self.exth_flag = 0
 
@@ -289,22 +267,6 @@ class MetadataHeader(BookHeader):
         else:
             self.exth = None
 
-    @property
-    def kf8_type(self):
-        if (self.mobi_version == 8 and getattr(self, 'skelidx', 0xffffffff) !=
-                0xffffffff):
-            return 'standalone'
-
-        kf8_header_index = getattr(self.exth, 'kf8_header', None)
-        if kf8_header_index is None:
-            return None
-        try:
-            if self.section_data(kf8_header_index-1) == b'BOUNDARY':
-                return 'joint'
-        except Exception:
-            pass
-        return None
-
     def identity(self):
         self.stream.seek(60)
         ident = self.stream.read(8).upper()
@@ -328,19 +290,6 @@ class MetadataHeader(BookHeader):
         off = section_headers[0]
         self.stream.seek(off)
         return self.stream.read(end_off - off)
-
-    def section_data(self, number):
-        start = self.section_offset(number)
-        if number == self.num_sections -1:
-            end = os.stat(self.stream.name).st_size
-        else:
-            end = self.section_offset(number + 1)
-        self.stream.seek(start)
-        try:
-            return self.stream.read(end - start)
-        except OverflowError:
-            self.stream.seek(start)
-            return self.stream.read()
 
     def __str__(self):
         return f'{self.__dict__}, {self.exth.mi.__dict__}'
@@ -384,35 +333,6 @@ class Kindle:
         pattern = re.compile(b'[^-A-Za-z0-9 ]+')
         return pattern.sub(b'_', self.stream.read(32).replace(b'\x00', b''))
 
-    def unShort(self, x):
-        """
-        Convert bits to text.
-
-        Args:
-            x (bytes): bytes to decode
-
-        Returns:
-            str: decoded bytes
-        """
-        buffer = self.data
-        val = struct.unpack_from(">H", buffer, x)
-        return val
-
-    def unLongx(self, total, x):
-        """
-        Convert bits to text.
-
-        Args:
-            total (int): number of bytes to decode
-            x (bytes): bytes to decode
-
-        Returns:
-            str: decoded bytes
-        """
-        buffer = self.data
-        form = ">" + ("L" * total)
-        val = struct.unpack_from(form, buffer, x)
-        return val
 
     def find_metadata(self):
         meta = {}
@@ -765,22 +685,3 @@ def reverse_tag_iter(block):
             break
         yield block[plt : pgt + 1]
         end = plt
-
-
-def getLanguage(langID, sublangID):
-    """
-    Get Language Standard.
-
-    Args:
-        langID (str): Landguage ID
-        sublangID (str): Sublanguage ID
-
-    Returns:
-        str: Language encoding.
-    """
-    sublangID = 0 if not sublangID else sublangID
-    try:
-        lang = language[langID][sublangID]
-    except KeyError:
-        lang = "en"
-    return lang

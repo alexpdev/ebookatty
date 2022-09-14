@@ -40,6 +40,8 @@ def execute():
     parser = argparse.ArgumentParser(description="get ebook metadata", prefix_chars="-")
     parser.add_argument('file', help='path to ebook file(s), standard file pattern extensions are allowed.', nargs=1)
     parser.add_argument('-o', '--output', help='file path where metadata will be written. Acceptable formats include json and csv and are determined based on the file extension. Default is None', action="store")
+    if len(sys.argv[1:]) == 0:
+        sys.argv.append("-h")
     args = parser.parse_args(sys.argv[1:])
     file_list = args.file
     matches = find_matches(file_list)
@@ -66,8 +68,8 @@ def execute():
                         record = record[0]
                     if isinstance(record, int):
                         record = str(record)
-                    if isinstance(record, bytes):
-                        record = str(record[0], encoding="utf-8", errors="ignore")
+                    if isinstance(record, bytes):  # pragma: nocover
+                        record = str(record[0], encoding="utf8", errors="ignore")
                     layer.append(record)
                 layers.append(layer)
             print(layers)

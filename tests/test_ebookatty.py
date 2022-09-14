@@ -63,3 +63,13 @@ def test_cli(testdir, flag, outdir, pattern, ext):
         assert os.path.exists(out)
     else:
         assert not out
+
+
+def test_main_execute():
+    import sys
+    args = ["ebookatty"]
+    sys.argv = args
+    try:
+        result = main()
+    except SystemExit:
+        assert True
