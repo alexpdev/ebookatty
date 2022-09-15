@@ -26,7 +26,7 @@ import sys
 import argparse
 import csv
 
-from ebookatty import get_metadata
+from ebookatty import get_metadata, MetadataFetcher
 
 def find_matches(files):
     """Find files that match the patterns."""
@@ -47,7 +47,9 @@ def execute():
     matches = find_matches(file_list)
     datas = []
     for match in matches:
-        data = get_metadata(match)
+        fetcher = MetadataFetcher(match)
+        data = fetcher.get_metadata()
+        # data = get_metadata(match)
         datas.append(data)
     if args.output:
         path = Path(args.output)
@@ -69,10 +71,16 @@ def execute():
                     if isinstance(record, int):
                         record = str(record)
                     if isinstance(record, bytes):  # pragma: nocover
-                        record = str(record[0], encoding="utf8", errors="ignore")
+                        try:
+                            record = str(record[0], encoding="utf8", errors="ignore")
+                        except:
+                            continue
                     layer.append(record)
                 layers.append(layer)
             print(layers)
             with open(path, "wt", encoding="utf-8", errors="ignore") as fd:
                 for layer in layers:
-                    fd.write(",".join(layer) + "\n")
+                    try:
+                        fd.write(",".join(layer) + "\n")
+                    except:
+                        continue
