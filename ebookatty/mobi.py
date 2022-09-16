@@ -111,31 +111,7 @@ class Metadata:
                 return _data.get('languages', [])[0]
             except:
                 return NULL_VALUES['language']
-        try:
-            return object.__getattribute__(self, field)
-        except AttributeError:
-            pass
-        if field in _data['user_metadata']:
-            d = _data['user_metadata'][field]
-            val = d['#value#']
-            if d['datatype'] != 'composite':
-                return val
-            if val is None:
-                d['#value#'] = 'RECURSIVE_COMPOSITE FIELD (Metadata) ' + field
-                val = d['#value#'] = self.formatter.safe_format(
-                                            d['display']['composite_template'],
-                                            self,
-                                            'TEMPLATE ERROR',
-                                            self, column_name=field,
-                                            template_cache=self.template_cache).strip()
-            return val
-        if field.startswith('#') and field.endswith('_index'):
-            try:
-                return self.get_extra(field[:-6])
-            except:
-                pass
-        raise AttributeError(
-                'Metadata object has no attribute named: '+ repr(field))
+        return object.__getattribute__(self, field)
 
     def __setattr__(self, field, val, extra=None):
         _data = object.__getattribute__(self, '_data')
@@ -158,9 +134,6 @@ class Metadata:
             if val and val.lower() != 'und':
                 langs = [val]
             _data['languages'] = langs
-        elif field in _data['user_metadata']:
-            _data['user_metadata'][field]['#value#'] = val
-            _data['user_metadata'][field]['#extra#'] = extra
         else:
             # You are allowed to stick arbitrary attributes onto this object as
             # long as they don't conflict with global or user metadata names
@@ -195,15 +168,6 @@ class Metadata:
         except AttributeError:
             return default
 
-    def get_extra(self, field, default=None):
-        _data = object.__getattribute__(self, '_data')
-        if field in _data['user_metadata']:
-            try:
-                return _data['user_metadata'][field]['#extra#']
-            except:
-                return default
-        raise AttributeError(
-                'Metadata object has no attribute named: '+ repr(field))
 
     def set(self, field, val, extra=None):
         self.__setattr__(field, val, extra)
@@ -261,27 +225,6 @@ class Metadata:
         '''
         return STANDARD_METADATA_FIELDS
 
-    def custom_field_keys(self):
-        '''
-        return a list of the custom fields in this book
-        '''
-        return iter(object.__getattribute__(self, '_data')['user_metadata'])
-
-    def all_field_keys(self):
-        '''
-        All field keys known by this instance, even if their value is None
-        '''
-        _data = object.__getattribute__(self, '_data')
-        return frozenset(ALL_METADATA_FIELDS.union(frozenset(_data['user_metadata'])))
-
-    def metadata_for_field(self, key):
-        '''
-        return metadata describing a standard or custom field.
-        '''
-        if key not in self.custom_field_keys():
-            return self.get_standard_metadata(key, make_copy=False)
-        return self.get_user_metadata(key, make_copy=False)
-
     def all_non_none_fields(self):
         '''
         Return a dictionary containing all non-None metadata fields, including
@@ -298,36 +241,7 @@ class Metadata:
             v = self.get(attr, None)
             if v is not None:
                 result[attr] = v
-        for attr in _data['user_metadata']:
-            v = self.get(attr, None)
-            if v is not None:
-                result[attr] = v
-                if _data['user_metadata'][attr]['datatype'] == 'series':
-                    result[attr+'_index'] = _data['user_metadata'][attr]['#extra#']
         return result
-
-    def get_all_user_metadata(self, make_copy):
-        '''
-        return a dict containing all the custom field metadata associated with
-        the book.
-        '''
-        _data = object.__getattribute__(self, '_data')
-        user_metadata = _data['user_metadata']
-        if not make_copy:
-            return user_metadata
-        res = {}
-        for k in user_metadata:
-            res[k] = copy.deepcopy(user_metadata[k])
-        return res
-
-    def get_user_metadata(self, field, make_copy):
-        _data = object.__getattribute__(self, '_data')
-        _data = _data['user_metadata']
-        if field in _data:
-            if make_copy:
-                return copy.deepcopy(_data[field])
-            return _data[field]
-        return None
 
     def authors_from_string(self, raw):
         self.authors = string_to_authors(raw)
@@ -483,8 +397,6 @@ class EXTHHeader:
                 self.mi.authors.append(au)
         elif idx == 101:
             self.mi.publisher = self.decode(content).strip()
-            if self.mi.publisher in {'Unknown', b'Unknown'}:
-                self.mi.publisher = None
         elif idx == 103:
             self.mi.comments  = self.decode(content).strip()
         elif idx == 104:
@@ -497,34 +409,25 @@ class EXTHHeader:
             self.mi.tags.extend([x.strip() for x in self.decode(content).split(';')])
             self.mi.tags = self.mi.tags[:]
         elif idx == 106:
-            try:
-                self.mi.pubdate = self.decode(content)
-            except Exception:
-                pass
+            self.mi.pubdate = self.decode(content)
         elif idx == 108:
             self.mi.book_producer = self.decode(content).strip()
         elif idx == 109:
             self.mi.rights = self.decode(content).strip()
         elif idx == 112:
-            try:
-                content = content.decode(codec).strip()
-                isig = 'urn:isbn:'
-                if content.lower().startswith(isig):
-                    raw = content[len(isig):]
-                    if raw and not self.mi.isbn:
-                        self.mi.isbn = raw
-                elif content.startswith('calibre:'):
-                    cid = content[len('calibre:'):]
-                    if cid:
-                        self.mi.application_id = self.mi.uuid = cid
-            except:
-                pass
+            content = content.decode(codec).strip()
+            isig = 'urn:isbn:'
+            if content.lower().startswith(isig):
+                raw = content[len(isig):]
+                if raw and not self.mi.isbn:
+                    self.mi.isbn = raw
+            elif content.startswith('calibre:'):
+                cid = content[len('calibre:'):]
+                if cid:
+                    self.mi.application_id = self.mi.uuid = cid
         elif idx == 113:
-            try:
-                self.uuid = content.decode('ascii')
-                self.mi.set_identifier('mobi-asin', self.uuid)
-            except Exception:
-                self.uuid = None
+            self.uuid = content.decode('ascii')
+            self.mi.set_identifier('mobi-asin', self.uuid)
         elif idx == 116:
             self.start_offset, = struct.unpack(b'>L', content)
         elif idx == 121:
@@ -613,6 +516,7 @@ class BookHeader:
                         0xffffffff
 
 
+from ebookatty.standards import mobi8_header
 class MetadataHeader(BookHeader):
 
     def __init__(self, stream):
@@ -621,15 +525,18 @@ class MetadataHeader(BookHeader):
         self.num_sections = self.section_count()
         if self.num_sections >= 2:
             header = self.header()
+            self.unpack(header)
             BookHeader.__init__(self, header, self.ident)
-        else:
-            self.exth = None
+
+    def unpack(self, header):
+        metadata = {}
+        for k,v in mobi8_header.items():
+            metadata[k] = struct.unpack(v[1], header[v[0]:v[0]+v[2]])
+
 
     def identity(self):
         self.stream.seek(60)
         ident = self.stream.read(8).upper()
-        if ident not in (b'BOOKMOBI', b'TEXTREAD'):
-            raise Exception
         return ident.decode()
 
     def section_count(self):
@@ -649,8 +556,6 @@ class MetadataHeader(BookHeader):
         self.stream.seek(off)
         return self.stream.read(end_off - off)
 
-    def __str__(self):
-        return f'{self.__dict__}, {self.exth.mi.__dict__}'
 
 def get_metadata(stream):
     stream.seek(0)
@@ -678,10 +583,10 @@ class Kindle:
         self.header = get_metadata(self.stream)
         self.metadata = {}
         for k,v in self.header.__dict__.items():
-            if not isinstance(v, (str, int, float, bytes, list, tuple, set, dict)):
+            if not isinstance(v, (str, int, float, list, tuple, set, dict)):
                 continue
             self.metadata[k] = v
         for k,v in self.header.exth.mi.__dict__.items():
-            if not isinstance(v, (str, int, float, bytes, list, tuple, set, dict)):
+            if not isinstance(v, (str, int, float, list, tuple, set, dict)):
                 continue
             self.metadata[k] = v

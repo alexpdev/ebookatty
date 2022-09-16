@@ -28,7 +28,7 @@ import zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
-from ebookatty import mobi
+from ebookatty import mobi, epub
 
 class Epub:
     """Gather Epub Metadata."""
@@ -204,6 +204,7 @@ class MetadataFetcher:
         """
         self.path = Path(path)
         if self.path.suffix == ".epub":
+            self.epubmeta = epub.get_epub_info(str(self.path), self.path.name, self.path.suffix)
             self.meta = Epub(self.path)
         elif self.path.suffix in [".azw3", "azw", "kfx", ".mobi"]:
             self.meta = mobi.Kindle(self.path)
@@ -298,7 +299,7 @@ def format_output(book):
     for field in fields:
         if field in book:
             extra_spaces = longest_field - len(field)
-            line = (" " * extra_spaces) + "\t" + str(book[field][0]) + "\n"
+            line = (" " * extra_spaces) + "\t" + str(book[field]) + "\n"
             line = field.title() + line
             output += line
             if len(line) + 1 > longest_line:
