@@ -1,7 +1,7 @@
 import re
-import os
 import zipfile
-from lxml import etree
+from pathlib import Path
+import xml.etree.ElementTree as ET
 
 
 def split_authors(values):
@@ -45,104 +45,68 @@ def get_sorted_author(value):
             value2 = value
     return value2
 
-def get_epub_info(tmp_file_path, original_file_name, original_file_extension):
-    ns = {
-        'n': 'urn:oasis:names:tc:opendocument:xmlns:container',
-        'pkg': 'http://www.idpf.org/2007/opf',
-        'dc': 'http://purl.org/dc/elements/1.1/'
-    }
+class Epub:
+    """Gather Epub Metadata."""
 
-    epub_zip = zipfile.ZipFile(tmp_file_path)
+    def __init__(self, path):
+        """
+        Construct the EpubMeta Class Instance.
 
-    txt = epub_zip.read('META-INF/container.xml')
-    tree = etree.fromstring(txt)
-    cf_name = tree.xpath('n:rootfiles/n:rootfile/@full-path', namespaces=ns)[0]
-    cf = epub_zip.read(cf_name)
-    tree = etree.fromstring(cf)
+        Args:
+            path (str or pathlike): path to ebook file.
+        """
+        self.tags = ["dc:title", "dc:contributor", "dc:creator", "dc:identifier",
+                     "dc:language", "dc:publisher", "dc:date", "dc:description",
+                     "dc:subject", "dc:rights", "creator", "publisher",
+                     "title", "language", "description", "subject", "date",
+                     "pubdate", "identifier", "rights", "contributor"]
+        self.path = Path(path)
+        self.epub_zip = zipfile.ZipFile(self.path)
+        self.stem = self.path.stem
+        self.suffix = self.path.suffix
+        self.opf = self.get_opf()
+        self.opf_data = self.epub_zip.read(self.opf).decode()
+        root = ET.fromstring(self.opf_data)
+        meta = self.iterer(root)
+        for key, val in meta.items():
+            if val:
+                val = '; '.join([str(i) for i in set(val)])
+                meta[key] = val
+        self.metadata = meta
 
+    def merge(self, data1, data2):
+        meta = {}
+        for dict_ in [data1, data2]:
+            print(dict_)
+            data = self.normalize_metadata(dict_)
+            for k, v in data.items():
+                meta.setdefault(k,[])
+                meta[k].extend(v)
+        return meta
 
-    cover_path = os.path.dirname(cf_name)
-
-    p = tree.xpath('/pkg:package/pkg:metadata', namespaces=ns)[0]
-
-    epub_metadata = {}
-
-    for s in ['title', 'description', 'creator', 'language', 'subject', 'publisher', 'date']:
-        tmp = p.xpath('dc:%s/text()' % s, namespaces=ns)
-        if len(tmp) > 0:
-            if s == 'creator':
-                epub_metadata[s] = ' & '.join(split_authors(tmp))
-            elif s == 'subject':
-                epub_metadata[s] = ', '.join(tmp)
-            elif s == 'date':
-                epub_metadata[s] = tmp[0][:10]
-            else:
-                epub_metadata[s] = tmp[0]
+    def iterer(self, root):
+        pattern = re.compile(r'\{.*\}(\w+)')
+        match = pattern.findall(root.tag)[0]
+        if match in self.tags:
+            meta = {match: [root.text]}
         else:
-            epub_metadata[s] = 'Unknown'
+            meta = {}
+        for element in root:
+            if element != root:
+                data = self.iterer(element)
+                for k,v in data.items():
+                    meta.setdefault(k,[])
+                    meta[k].extend(v)
+        return meta
 
-    if epub_metadata['subject'] == 'Unknown':
-        epub_metadata['subject'] = ''
-
-    if epub_metadata['publisher'] == u'Unknown':
-        epub_metadata['publisher'] = ''
-
-    if epub_metadata['date'] == u'Unknown':
-        epub_metadata['date'] = ''
-
-    if epub_metadata['description'] == u'Unknown':
-        description = tree.xpath("//*[local-name() = 'description']/text()")
-        if len(description) > 0:
-            epub_metadata['description'] = description
-        else:
-            epub_metadata['description'] = ""
-
-    lang = epub_metadata['language'].split('-', 1)[0].lower()
-    epub_metadata['language'] = lang
-
-    epub_metadata = parse_epub_series(ns, tree, epub_metadata)
-
-    # cover_file = parse_epub_cover(ns, tree, epub_zip, cover_path, tmp_file_path)
-
-    identifiers = []
-    for node in p.xpath('dc:identifier', namespaces=ns):
-        identifier_name=node.attrib.values()[-1];
-        identifier_value=node.text;
-        if identifier_name in ('uuid','calibre'):
-            continue;
-        identifiers.append( [identifier_name, identifier_value] )
-
-    if not epub_metadata['title']:
-        title = original_file_name
-    else:
-        title = epub_metadata['title']
-
-    return {
-        "file_path": tmp_file_path,
-        "extension": original_file_extension,
-        "title": title.encode('utf-8').decode('utf-8'),
-        "author": epub_metadata['creator'].encode('utf-8').decode('utf-8'),
-        # "cover": cover_file,
-        "description": epub_metadata['description'],
-        "tags": epub_metadata['subject'].encode('utf-8').decode('utf-8'),
-        "series": epub_metadata['series'].encode('utf-8').decode('utf-8'),
-        "series_id": epub_metadata['series_id'].encode('utf-8').decode('utf-8'),
-        "languages": epub_metadata['language'],
-        "publisher": epub_metadata['publisher'].encode('utf-8').decode('utf-8'),
-        "pubdate": epub_metadata['date'],
-        "identifiers": identifiers
-    }
-
-def parse_epub_series(ns, tree, epub_metadata):
-    series = tree.xpath("/pkg:package/pkg:metadata/pkg:meta[@name='calibre:series']/@content", namespaces=ns)
-    if len(series) > 0:
-        epub_metadata['series'] = series[0]
-    else:
-        epub_metadata['series'] = ''
-
-    series_id = tree.xpath("/pkg:package/pkg:metadata/pkg:meta[@name='calibre:series_index']/@content", namespaces=ns)
-    if len(series_id) > 0:
-        epub_metadata['series_id'] = series_id[0]
-    else:
-        epub_metadata['series_id'] = '1'
-    return epub_metadata
+    def get_opf(self):
+        ns = {'n': 'urn:oasis:names:tc:opendocument:xmlns:container',
+              'pkg': 'http://www.idpf.org/2007/opf',
+              'dc': 'http://purl.org/dc/elements/1.1/'}
+        txt = self.epub_zip.read('META-INF/container.xml')
+        tree = ET.fromstring(txt)
+        elems = tree.findall('n:rootfiles/n:rootfile', namespaces=ns)
+        for elem in elems:
+            if 'full-path' in elem.attrib:
+                return elem.attrib['full-path']
+        return None

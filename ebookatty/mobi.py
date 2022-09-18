@@ -208,7 +208,7 @@ class MetadataHeader(BookHeader):
         self.data = Metadata()
         self.stream = stream
         self.ident = self.identity()
-        self.data.add_value('identity', self.identity)
+        self.data.add_value('identity', self.ident)
         self.num_sections = self.section_count()
         if self.num_sections >= 2:
             header = self.header()
