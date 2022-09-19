@@ -37,7 +37,7 @@ ebookatty path/to/ebook.epub
 or import into your project...
 
 ```python
-from ebookatty import get_metadata, MetadataFetcher
+from ebookatty import MetadataFetcher
 ```
 
 ## License / EULA
