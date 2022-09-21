@@ -24,7 +24,6 @@ Classes and functions for .azw, .azw3, and .kfx ebooks.
 """
 from pathlib import Path
 import shutil
-from xml.etree import ElementTree as ET
 from ebookatty import mobi, epub, standards
 
 class MetadataFetcher:
@@ -45,6 +44,8 @@ class MetadataFetcher:
             self.meta = epub.Epub(self.path)
         elif self.path.suffix in [".azw3", "azw", "kfx", ".mobi"]:
             self.meta = mobi.Kindle(self.path)
+        else:
+            self.meta = {}
 
     def get_metadata(self):
         """
@@ -53,9 +54,13 @@ class MetadataFetcher:
         Returns:
             dict: Metadata keys and values embedded in the file.
         """
-        data = self.meta.metadata
-        print(format_output(data))
-        return data
+        if hasattr(self.meta, "metadata"):
+            if self.meta.metadata:
+                output = format_output(self.meta.metadata)
+                self.output = output
+                self.metadata = self.meta.metadata
+                return self.metadata
+        return {}
 
 def format_output(book):
     """
@@ -67,7 +72,7 @@ def format_output(book):
     Returns:
         str: Text data to output to STDOUT
     """
-    fields = standards.ALL_TAGS
+    fields = standards.ALL_FIELDS
     termsize = shutil.get_terminal_size().columns
     long_tag = max([len(key) for key in book.keys()])
     tail_size = termsize - long_tag - 5
@@ -93,10 +98,12 @@ def format_output(book):
             for section in sections:
                 text += extra + section + "\n"
             output.append(text)
+    output = sorted(output, key=len)
     output.insert(0,"\n" +("-" * long_line))
     output.append(("-" * long_line) + "\n")
     final = "\n".join(output)
     print(final)
+    return output
 
 def text_sections(section_size, text):
     while len(text) > section_size:

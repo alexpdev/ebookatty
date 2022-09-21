@@ -23,6 +23,6 @@
 from ebookatty.metadata import MetadataFetcher
 from ebookatty.cli import execute
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 __all__ = ["MetadataFetcher", "execute"]

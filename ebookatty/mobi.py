@@ -26,9 +26,8 @@ import re
 import struct
 from datetime import date
 import io
-import copy
 from pathlib import Path
-from ebookatty.standards import id_map_strings, id_map_hexstrings, id_map_values
+from ebookatty.standards import EXTH_Types
 
 isoformat = date.isoformat
 
@@ -53,11 +52,11 @@ class Metadata:
             self.data[item] = [other]
 
     def add_value(self, key, value):
-        self.data.setdefault(key, [])
+        self.setdefault(key, [])
         self.data[key].append(value)
 
     def extend(self, key, value):
-        self.data.setdefault(key, [])
+        self.setdefault(key, [])
         self.data[key].extend(value)
 
 
@@ -66,7 +65,7 @@ class EXTHHeader:
     def __init__(self, raw, codec, title, data):
         self._data = data
         self.codec = codec
-        self.doctype = raw[:4]
+        self.doctype = raw[:4].decode()
         self.length, self.num_items = struct.unpack('>LL', raw[4:12])
         raw = raw[12:]
         pos = 0
@@ -87,16 +86,16 @@ class EXTHHeader:
         self._data.add_value(*args)
 
     def process_metadata(self, idx, content):
-        if idx in id_map_strings:
+        if idx in EXTH_Types:
             if idx == 100:
                 au = self.decode(content)
                 m = re.match(r'([^,]+?)\s*,\s+([^,]+)$', au.strip())
                 if m is not None:
                     au = m.group()
-                self.set_data(id_map_strings[idx], au)
+                self.set_data(EXTH_Types[idx], au)
             elif idx == 105:
                 t = [x.strip() for x in self.decode(content).split(';')]
-                self._data.extend(id_map_strings[idx], t)
+                self._data.extend(EXTH_Types[idx], t)
             elif idx == 112:
                 content = self.decode(content)
                 isig = 'urn:isbn:'
@@ -104,7 +103,6 @@ class EXTHHeader:
                     raw = content[len(isig):]
                     if raw:
                         self.set_data('isbn', raw)
-
                 elif content.startswith('calibre:'):
                     cid = content[len('calibre:'):]
                     if cid:
@@ -112,17 +110,8 @@ class EXTHHeader:
             else:
                 item = self.decode(content)
                 if item:
-                    self.set_data(id_map_strings[idx], item)
+                    self.set_data(EXTH_Types[idx], item)
 
-        elif idx in id_map_values:
-            item = struct.unpack(b">L", content)
-            if item:
-                self.set_data(id_map_values[idx], item[0])
-
-        elif idx in id_map_hexstrings:
-            item = content.fromhex()
-            if item:
-                self.set_data(id_map_hexstrings[idx], item)
 
 
 class BookHeader:
@@ -221,7 +210,7 @@ class Kindle():
         metadata = header.data
         metadata.add_value('name', self.stem)
         metadata.add_value('filetype', self.suffix)
-        data = copy.deepcopy(metadata.data)
+        data = metadata.data
         for key, value in data.items():
             value = set(value)
             value = [str(i) for i in value]

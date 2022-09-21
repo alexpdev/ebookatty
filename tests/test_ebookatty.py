@@ -52,12 +52,9 @@ def test_cli(testdir, flag, outdir, pattern, ext):
     args = ["ebookatty", files]
     out = ""
     if flag:
-        print(args)
         out = os.path.join(outdir, "outfile" + ext)
         args += [flag, out]
-        print(args)
     sys.argv = args
-    print(sys.argv)
     execute()
     if flag:
         assert os.path.exists(out)

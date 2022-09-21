@@ -1,9 +1,12 @@
+
 import re
-import json
 import zipfile
 from pathlib import Path
-import xml.etree.ElementTree as ET
-from ebookatty.standards import OPF_tags
+from xml.etree import ElementTree as ET
+from ebookatty.standards import OPF_TAGS
+
+
+
 
 class Epub:
     """Gather Epub Metadata."""
@@ -15,7 +18,7 @@ class Epub:
         Args:
             path (str or pathlike): path to ebook file.
         """
-        self.tags = OPF_tags
+        self.tags = OPF_TAGS
         self.path = Path(path)
         self.epub_zip = zipfile.ZipFile(self.path)
         self.stem = self.path.stem
@@ -27,13 +30,17 @@ class Epub:
         for key, val in meta.items():
             if val:
                 val = '; '.join([str(i) for i in set(val)])
+                if val == "en":
+                    val = "English"
                 meta[key] = val
+        if "creator" in meta:
+            meta["author"] = meta["creator"]
         self.metadata = meta
 
     def iterer(self, root):
         pattern = re.compile(r'\{.*\}(\w+)')
         match = pattern.findall(root.tag)[0]
-        if match in self.tags:
+        if match in self.tags and root.text not in [None, "None", "NONE"]:
             meta = {match: [root.text]}
         else:
             meta = {}
