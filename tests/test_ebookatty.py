@@ -2,7 +2,7 @@ import sys
 import shutil
 import os
 import pytest
-from ebookatty import get_metadata, MetadataFetcher
+from ebookatty import MetadataFetcher
 from ebookatty.__main__ import main
 from ebookatty.cli import execute
 
@@ -33,7 +33,7 @@ def outdir():
 
 @pytest.mark.parametrize("book", get_testfiles())
 def test_get_metadata(book):
-    assert get_metadata(book) is not None
+    assert MetadataFetcher(book).get_metadata() is not None
 
 
 @pytest.mark.parametrize("book", get_testfiles())

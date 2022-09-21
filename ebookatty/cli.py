@@ -26,7 +26,7 @@ import sys
 import argparse
 import csv
 
-from ebookatty import get_metadata, MetadataFetcher
+from ebookatty import MetadataFetcher
 
 def find_matches(files):
     """Find files that match the patterns."""
