@@ -23,8 +23,8 @@ Module contains implementation specific to amazon formatted ebooks.
 Classes and functions for .azw, .azw3, and .kfx ebooks.
 """
 from pathlib import Path
-from xml.etree import ElementTree as ET
-from ebookatty import mobi, epub
+import shutil
+from ebookatty import mobi, epub, standards
 
 class MetadataFetcher:
     """Primary Entrypoint for extracting metadata from most ebook filetypes."""
@@ -44,6 +44,8 @@ class MetadataFetcher:
             self.meta = epub.Epub(self.path)
         elif self.path.suffix in [".azw3", "azw", "kfx", ".mobi"]:
             self.meta = mobi.Kindle(self.path)
+        else:
+            self.meta = {}
 
     def get_metadata(self):
         """
@@ -52,40 +54,13 @@ class MetadataFetcher:
         Returns:
             dict: Metadata keys and values embedded in the file.
         """
-        data = self.meta.metadata
-        print(format_output(data))
-        return data
-
-    @classmethod
-    def get(cls, path):
-        """
-        Get metadata from ebook at specified path.
-
-        Args:
-            path (str or path-like): Path to ebook.
-
-        Returns:
-            dict: Metadata keys and values embedded in the file.
-        """
-        meta = cls(path)
-        metadata = meta.get_metadata()
-        print(format_output(metadata))
-        return metadata
-
-
-def get_metadata(path):
-    """
-    Extract metadata from ebooks.
-
-    Args:
-        path (str or path-like): Path to ebook file.
-
-    Returns:
-        dict: Metadata keys and values embedded in the file.
-    """
-    metadata = MetadataFetcher.get(path)
-    return metadata
-
+        if hasattr(self.meta, "metadata"):
+            if self.meta.metadata:
+                output = format_output(self.meta.metadata)
+                self.output = output
+                self.metadata = self.meta.metadata
+                return self.metadata
+        return {}
 
 def format_output(book):
     """
@@ -97,28 +72,44 @@ def format_output(book):
     Returns:
         str: Text data to output to STDOUT
     """
-    fields = [
-        "filename",  "path",        "extension",     "size",
-        "author",    "title",       "publisher",     "creator",
-        "language",  "contributor", "date",          "rights",
-        "tags",      "authors",     "author_sort",   "comments",
-        "isbn",      "pubdate",     "book_producer", "application_id",
-        "uuid",      "codec",       "doctype",       "sublanguage",
-        "unique_id", "ident",       "identity",      "subject",
-        "type",      "identifiers", "version",       "identifier",
-        "name"
-    ]
-    output = ""
-    longest_line = 0
-    longest_field = max([len(i) for i in fields])
-    for field in fields:
-        if field in book:
-            extra_spaces = longest_field - len(field)
-            line = (" " * extra_spaces) + "\t" + str(book[field]) + "\n"
-            line = field.title() + line
-            output += line
-            if len(line) + 1 > longest_line:
-                longest_line = len(line) + 1
-    output += "-" * longest_line + "\n"
-    output = "-" * longest_line + "\n" + output
+    fields = standards.ALL_FIELDS
+    termsize = shutil.get_terminal_size().columns
+    long_tag = max([len(key) for key in book.keys()])
+    tail_size = termsize - long_tag - 5
+    long_line = 0
+    output = []
+    for key, value in book.items():
+        if key not in fields:
+            continue
+        if "\n" in value:
+            value = " ".join(value.split("\n"))
+        left = long_tag - len(key)
+        start = key + ":" + (" " * left)
+        if len(value) <= tail_size:
+            start += "\t" + value
+            if len(start) > long_line:
+                long_line = len(start)
+            output.append(start)
+        else:
+            long_line = termsize - 3
+            sections = text_sections(tail_size, value)
+            extra = (" " * len(start)) + "\t"
+            text = start + "\t" + next(sections) + "\n"
+            for section in sections:
+                text += extra + section + "\n"
+            output.append(text)
+    output = sorted(output, key=len)
+    output.insert(0,"\n" +("-" * long_line))
+    output.append(("-" * long_line) + "\n")
+    final = "\n".join(output)
+    print(final)
     return output
+
+def text_sections(section_size, text):
+    while len(text) > section_size:
+        size = section_size
+        while text[size] != ' ':
+            size -= 1
+        yield text[:size]
+        text = text[size+1:]
+    yield text

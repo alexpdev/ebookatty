@@ -22,26 +22,19 @@ Module contains implementation specific to amazon formatted ebooks.
 
 Classes and functions for .azw, .azw3, and .kfx ebooks.
 """
-
-import os
 import re
 import struct
-import zipfile
 from datetime import date
 import io
-import copy
 from pathlib import Path
-from ebookatty.standards import mobi8_header
-from ebookatty.standards import SIMPLE_GET, SIMPLE_SET, TOP_LEVEL_IDENTIFIERS, STANDARD_METADATA_FIELDS, ALL_METADATA_FIELDS
-from xml.etree import ElementTree as ET
-from ebookatty.standards import EXTH_Types, _OPF_PARENT_TAGS
+from ebookatty.standards import EXTH_Types
 
 isoformat = date.isoformat
 
 class Metadata:
 
-    def __init__(self, data={}):
-        self.data = data
+    def __init__(self):
+        self.data = {}
 
     def setdefault(self, *args):
         self.data.setdefault(*args)
@@ -59,24 +52,24 @@ class Metadata:
             self.data[item] = [other]
 
     def add_value(self, key, value):
-        self.data.setdefault(key, [])
+        self.setdefault(key, [])
         self.data[key].append(value)
 
     def extend(self, key, value):
-        self.data.setdefault(key, [])
+        self.setdefault(key, [])
         self.data[key].extend(value)
+
 
 class EXTHHeader:
 
     def __init__(self, raw, codec, title, data):
         self._data = data
         self.codec = codec
-        self.doctype = raw[:4]
+        self.doctype = raw[:4].decode()
         self.length, self.num_items = struct.unpack('>LL', raw[4:12])
         raw = raw[12:]
         pos = 0
         left = self.num_items
-        self.kf8_header = None
         self.set_data('title', title)
         self.set_data('doctype', self.doctype)
         while left > 0:
@@ -93,72 +86,33 @@ class EXTHHeader:
         self._data.add_value(*args)
 
     def process_metadata(self, idx, content):
-        if idx == 501:
-            cdetype = content.decode('ascii')
-            self.set_data('cdetype', cdetype)
-        elif idx == 503:
-            title = self.decode(content)
-            self.set_data('title', title)
-        elif idx == 524:
-            lang = self.decode(content)
-            self.set_data('lang', lang)
-        elif idx == 525:
-            pwm = self.decode(content)
-            if pwm:
-                self.primary_writing_mode = pwm
-        elif idx == 527:
-            ppd = self.decode(content)
-            if ppd:
-                self.page_progression_direction = ppd
-        elif idx == 100:
-            au = self.decode(content)
-            m = re.match(r'([^,]+?)\s*,\s+([^,]+)$', au.strip())
-            if m is not None:
-                au = m.group()
-            self.set_data('author', au)
-        elif idx == 101:
-            publisher = self.decode(content)
-            self.set_data('publisher', publisher)
-        elif idx == 103:
-            comments  = self.decode(content)
-            self.set_data('comments', comments)
-        elif idx == 104:
-            raw = self.decode(content).replace('-', '')
-            if raw:
-                self.set_data('isbn', raw)
-        elif idx == 105:
-            t = [x.strip() for x in self.decode(content).split(';')]
-            self._data.extend('tags', t)
-        elif idx == 106:
-            pubdate = self.decode(content)
-            self.set_data('pubdate', pubdate)
-        elif idx == 108:
-            book_producer = self.decode(content)
-            self.set_data('book_producer', book_producer)
-        elif idx == 109:
-            rights = self.decode(content)
-            self.set_data('rights', rights)
-        elif idx == 112:
-            content = self.decode(content)
-            isig = 'urn:isbn:'
-            if content.lower().startswith(isig):
-                raw = content[len(isig):]
-                if raw:
-                    self.set_data('isbn', raw)
+        if idx in EXTH_Types:
+            if idx == 100:
+                au = self.decode(content)
+                m = re.match(r'([^,]+?)\s*,\s+([^,]+)$', au.strip())
+                if m is not None:
+                    au = m.group()
+                self.set_data(EXTH_Types[idx], au)
+            elif idx == 105:
+                t = [x.strip() for x in self.decode(content).split(';')]
+                self._data.extend(EXTH_Types[idx], t)
+            elif idx == 112:
+                content = self.decode(content)
+                isig = 'urn:isbn:'
+                if content.lower().startswith(isig):
+                    raw = content[len(isig):]
+                    if raw:
+                        self.set_data('isbn', raw)
+                elif content.startswith('calibre:'):
+                    cid = content[len('calibre:'):]
+                    if cid:
+                        self.set_data('uuid', cid)
+            else:
+                item = self.decode(content)
+                if item:
+                    self.set_data(EXTH_Types[idx], item)
 
-            elif content.startswith('calibre:'):
-                cid = content[len('calibre:'):]
-                if cid:
-                    self.set_data('uuid', cid)
-        elif idx == 113:
-            uuid = content.decode('ascii')
-            self.set_data('mobi-asin', uuid)
-        elif idx == 116:
-            self.start_offset, = struct.unpack(b'>L', content)
-        elif idx == 121:
-            self.kf8_header, = struct.unpack(b'>L', content)
-            if self.kf8_header == 0xffffffff:
-                self.kf8_header = None
+
 
 class BookHeader:
 
@@ -207,19 +161,13 @@ class MetadataHeader(BookHeader):
     def __init__(self, stream):
         self.data = Metadata()
         self.stream = stream
+        self.stream.seek(0)
         self.ident = self.identity()
         self.data.add_value('identity', self.ident)
         self.num_sections = self.section_count()
         if self.num_sections >= 2:
             header = self.header()
-            self.meta = self.unpack(header)
             BookHeader.__init__(self, header, self.data)
-
-    def unpack(self, header):
-        metadata = {}
-        for k,v in mobi8_header.items():
-            metadata[k] = struct.unpack(v[1], header[v[0]:v[0]+v[2]])
-        return metadata
 
     def identity(self):
         self.stream.seek(60)
@@ -243,12 +191,7 @@ class MetadataHeader(BookHeader):
         self.stream.seek(off)
         return self.stream.read(end_off - off)
 
-def get_metadata(stream):
-    stream.seek(0)
-    mh = MetadataHeader(stream)
-    return mh.data
-
-class Kindle:
+class Kindle():
     """Gather Epub Metadata."""
 
     def __init__(self, path):
@@ -263,12 +206,11 @@ class Kindle:
         self.suffix = self.path.suffix
         self.data = self.path.read_bytes()
         self.stream = io.BytesIO(self.data)
-        self.palmheader = self.data[:78]
-        self.palmname = self.data[:32]
-        metadata = get_metadata(self.stream)
+        header = MetadataHeader(self.stream)
+        metadata = header.data
         metadata.add_value('name', self.stem)
         metadata.add_value('filetype', self.suffix)
-        data = copy.deepcopy(metadata.data)
+        data = metadata.data
         for key, value in data.items():
             value = set(value)
             value = [str(i) for i in value]

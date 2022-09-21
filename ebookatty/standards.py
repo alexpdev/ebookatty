@@ -19,7 +19,7 @@
 ##############################################################################
 """Standards, encodings and mappings used for metadata translating."""
 
-palmdoc_header = {
+"""palmdoc_header = {
     "compression_type": (0x00, b">H", 2),
     "fill0": (0x02, b">H", 2),
     "text_length": (0x04, b">L", 4),
@@ -201,7 +201,7 @@ mobi8_header = {
     "Unknown16": (0x134, b">L", 4),
     "Unknown17": (0x138, b">L", 4),
     "Unknown18": (0x11C, b">L", 4),
-}
+}"""
 
 id_map_strings = {
     1: "Drm Server Id",
@@ -272,16 +272,16 @@ id_map_strings = {
     533: "Font_Converted",
     534: "Amazon_Creator_Info",
     535: "Creator-Build-Tag",
-    # CONT_Header is 0, Ends with CONTAINER_BOUNDARY (or Asset_Type?)
     536: "HD-Media-Containers-Info",
     538: "Resource-Container-Fidelity",
     539: "HD-Container-Mimetype",
     540: "Sample-For_Special-Purpose",
     541: "Kindletool-Operation-Information",
     542: "Container_Id",
-    543: "Asset-Type",  # FONT_CONTAINER, BW_CONTAINER, HD_CONTAINER
+    543: "Asset-Type",
     544: "Unknown_544",
 }
+
 id_map_values = {
     115: "sample",
     116: "StartOffset",
@@ -301,6 +301,7 @@ id_map_values = {
     404: "Text-to-Speech-Disabled",
     406: "Rental-Expiration-Time",
 }
+
 id_map_hexstrings = {
     208: "Watermark_(hex)",
     209: "Tamper-Proof-Keys_(hex)",
@@ -315,17 +316,11 @@ id_map_hexstrings = {
     453: "Sample-End-Location_(hex)",
 }
 
-
-# important  pdb header offsets
 unique_id_seed = 68
 number_of_pdb_records = 76
-
-# important palmdoc header offsets
 book_length = 4
 book_record_count = 8
 first_pdb_record = 78
-
-# important rec0 offsets
 length_of_book = 4
 mobi_header_base = 16
 mobi_header_length = 20
@@ -347,18 +342,8 @@ huffoff = 112
 hufftbloff = 120
 
 
-OPF_tags = [
+OPF_TAGS = [
     "metadata",
-    "dc:title",
-    "dc:contributor",
-    "dc:identifier",
-    "dc:language",
-    "dc:publisher",
-    "dc:date",
-    "dc:description",
-    "dc:subject",
-    "dc:rights",
-    "dc:format",
     "identifier",
     "creator",
     "publisher",
@@ -367,85 +352,81 @@ OPF_tags = [
     "language",
     "description",
     "subject",
+    "size",
+    "contributor",
+    "date",
+    "rights",
+    "tags",
+    "tag",
+    "comments",
+    "comment",
+    "isbn",
+    "pubdate",
+    "uuid",
+    "sublanguage",
+    "identity",
+    "type",
+    "identifiers",
+    "version",
+    "name"
 ]
+
+
 EXTH_Types = {
     1: "drm_server_id",
     2: "drm_commerce_id",
     3: "drm_ebookbase_book_id",
-    100: "author",  # <dc:Creator>
-    101: "publisher",  # <dc:Publisher>
-    102: "imprint",  # <Imprint>
-    103: "description",  # <dc:Description>
-    104: "isbn",  # <dc:Identifier scheme='ISBN'>
-    105: "subject",  # Could appear multiple times	<dc:Subject>
-    106: "publishingdate",  # <dc:Date>
-    107: "review",  # <Review>
-    108: "contributor",  # <dc:Contributor>
-    109: "rights",  # <dc:Rights>
-    110: "subjectcode",  # <dc:Subject BASICCode="subjectcode">
-    111: "type",  # <dc:Type>
-    112: "source",  # <dc:Source>
-    113: "asin",  # Kindle Paperwhite labels books with "Personal"
+    100: "author",
+    101: "publisher",
+    102: "imprint",
+    103: "description",
+    104: "isbn",
+    105: "subject",
+    106: "published",
+    107: "review",
+    108: "contributor",
+    109: "rights",
+    110: "subjectcode",
+    111: "type",
+    112: "source",
+    113: "asin",
     114: "versionnumber",
-    115: "sample",  # 0x0001 if the book content is only a sample
-    116: "startreading",  # Position (4-byte offset) in file when first opened
-    # Mobipocket Creator adds this if Adult only is checked on its
-    # GUI; contents: "yes"	<Adult>
+    115: "sample",
     117: "adult",
-    118: "retail",  # price	As text, e.g. "4.99"	<SRP>
-    119: "retail",  # price currency As text, e.g. "USD"
-    121: "KF8",  # BOUNDARY Offset
-    125: "count",  # of resources
-    129: "KF8",  # cover URI
-    131: "Unknown",
-    200: "Dictionary",  # short name	As text	<DictionaryVeryShortName>
-    # Add to first image field in Mobi Header to find PDB record
-    # containing the cover image	<EmbeddedCover>
-    201: "coveroffset",
-    # Add to first image field in Mobi Header to find PDB record
-    # containing the thumbnail cover image
-    202: "thumboffset",
-    203: "hasfakecover",
-    # Software	Known Values: 1=mobigen, 2=Mobipocket Creator,
-    # 200=kindlegen (Windows), 201=kindlegen (Linux), 202=kindlegen (Mac).
-    204: "Creator",
-    205: "Creator",  # Major Version
-    206: "Creator",  # Minor Version
-    207: "Creator",  # Build Number
+    118: "retail",
+    119: "retail",
+    121: "KF8",
+    129: "KF8",
+    123: "booktype",
+    200: "Dictionary",
     208: "watermark",
-    # proof keys Used by the Kindle (and Android app) for generating
-    # book-specific PIDs.
     209: "tamper",
     300: "fontsignature",
-    # Integer percentage of the text allowed to be clipped. Usually 10.
     401: "clippinglimit",
     402: "publisherlimit",
-    403: "Unknown",
-    404: "ttsflag",  # 1 - Text to Speech disabled; 0 - Text to Speech enabled
-    # (Rent/Borrow flag?)	1 in this field seems to indicate a rental book
+    404: "ttsflag",
     405: "Unknown",
-    # /Borrow Expiration Date	If this field is removed
-    # from a rental, the book says it expired in 1969
     406: "Rent",
-    407: "Unknown",
-    450: "Unknown",
-    451: "Unknown",
-    452: "Unknown",
-    453: "Unknown",
-    501: "cdetype",  # PDOC - Personal Doc; EBOK - ebook; EBSP - ebook sample;
+    501: "cdetype",
     502: "lastupdatetime",
     503: "updatedtitle",
-    504: "asin",  # I found a copy of ASIN in this record.
-    524: "language",  # <dc:language>
-    525: "writingmode",  # I found horizontal-lr in this record.
-    # Build Number	I found 1019-d6e4792 in this record,
-    # which is a build number of Kindlegen 2.7
+    504: "asin",
+    506: "Title-Language",
+    508: "Title-Pronunciation",
+    510: "Secondary-Title",
+    511: "Secondary-Title-Language",
+    513: "Secondary-Title-Pronunciation",
+    515: "Author-Language",
+    517: "Author-Pronunciation",
+    520: "Publisher-Language",
+    522: "Publisher-Pronunciation",
+    524: "language",
+    525: "writingmode",
+    534: "Amazon_Creator_Info",
     535: "Creator",
-    536: "Unknown",
-    542: "Unknown",  # Some Unix timestamp.
-    # String 'I\x00n\x00M\x00e\x00m\x00o\x00r\x00y\x00' found
-    # in this record, for KindleGen V2.9 build 1029-0897292
-    547: "InMemory",
+    539: "HD-Container-Mimetype",
+    542: "Container_Id",
+    543: "Asset-Type",
 }
 
 META_TAGS = [
@@ -469,7 +450,7 @@ META_TAGS = [
     "Tamper Proof Keys (hex)",
 ]
 
-_OPF_PARENT_TAGS = [
+OPF_PARENT_TAGS = [
     "xml",
     "package",
     "metadata",
@@ -481,121 +462,94 @@ _OPF_PARENT_TAGS = [
     "guide",
 ]
 
-TOP_LEVEL_IDENTIFIERS = frozenset((
-    'isbn',
-))
-PUBLICATION_METADATA_FIELDS = frozenset((
-    'title',            # title must never be None. Should be _('Unknown')
-    # Pseudo field that can be set, but if not set is auto generated
-    # from title and languages
+TOP_LEVEL_IDENTIFIERS = [
+    'isbn'
+]
+
+PUBLICATION_METADATA_FIELDS = [
+    'title',
     'title_sort',
-    'authors',          # Ordered list. Must never be None, can be [_('Unknown')]
-    'author_sort_map',  # Map of sort strings for each author
-    # Pseudo field that can be set, but if not set is auto generated
-    # from authors and languages
+    'authors',
+    'author_sort_map',
     'author_sort',
+    'creator',
     'book_producer',
-    'timestamp',        # Dates and times must be timezone aware
+    'timestamp',
     'pubdate',
+    'identity',
+    'ident',
+    'asin',
+    'codec',
+    'doctype',
+    'path',
+    'extension',
+    'name',
+    'filename',
+    'unique_id',
+    'version',
+    'language',
+    'langid',
     'last_modified',
     'rights',
-    # So far only known publication type is periodical:calibre
-    # If None, means book
     'publication_type',
-    'uuid',             # A UUID usually of type 4
-    'languages',        # ordered list of languages in this publication
-    'publisher',        # Simple string, no special semantics
-    # Absolute path to image file encoded in filesystem_encoding
+    'uuid',
+    'languages',
+    'publisher',
     'cover',
-    # Of the form (format, data) where format is, e.g. 'jpeg', 'png', 'gif'...
     'cover_data',
-    # Either thumbnail data, or an object with the attribute
-    # image_path which is the path to an image file, encoded
-    # in filesystem_encoding
     'thumbnail',
-))
+]
 
-BOOK_STRUCTURE_FIELDS = frozenset((
-    # These are used by code, Null values are None.
+BOOK_STRUCTURE_FIELDS = [
     'toc', 'spine', 'guide', 'manifest',
-))
+]
 
-USER_METADATA_FIELDS = frozenset((
-    # A dict of dicts similar to field_metadata. Each field description dict
-    # also contains a value field with the key #value#.
-    'user_metadata',
-))
+USER_METADATA_FIELDS = [
+    'user_metadata'
+]
 
-DEVICE_METADATA_FIELDS = frozenset((
-    'device_collections',   # Ordered list of strings
-    'lpath',                # Unicode, / separated
-    'size',                 # In bytes
-    'mime',                 # Mimetype of the book file being represented
-))
+DEVICE_METADATA_FIELDS = [
+    'device_collections',
+    'lpath',
+    'size',
+    'mime'
+]
 
-CALIBRE_METADATA_FIELDS = frozenset((
-    'application_id',   # An application id, currently set to the db_id.
-    'db_id',            # the calibre primary key of the item.
-    'formats',          # list of formats (extensions) for this book
-    # a dict of user category names, where the value is a list of item names
-    # from the book that are in that category
+CALIBRE_METADATA_FIELDS = [
+    'application_id',
+    'db_id',
+    'formats',
     'user_categories',
-    # a dict of author to an associated hyperlink
     'author_link_map',
-))
+]
 
-
-SOCIAL_METADATA_FIELDS = frozenset((
-    'tags',             # Ordered list
-    'rating',           # A floating point number between 0 and 10
-    'comments',         # A simple HTML enabled string
-    'series',           # A simple string
-    'series_index',     # A floating point number
-    # Of the form { scheme1:value1, scheme2:value2}
-    # For example: {'isbn':'123456789', 'doi':'xxxx', ... }
+SOCIAL_METADATA_FIELDS = [
+    'tags',
+    'rating',
+    'comments',
+    'series',
+    'series_index',
     'identifiers',
-))
+]
 
+SC_FIELDS_NOT_COPIED = [
+    'title',
+    'title_sort',
+    'authors',
+    'author_sort',
+    'author_sort_map',
+    'cover_data',
+    'tags',
+    'languages',
+    'identifiers'
+]
 
-ALL_METADATA_FIELDS =      SOCIAL_METADATA_FIELDS.union(
-                           PUBLICATION_METADATA_FIELDS).union(
-                           BOOK_STRUCTURE_FIELDS).union(
-                           USER_METADATA_FIELDS).union(
-                           DEVICE_METADATA_FIELDS).union(
-                           CALIBRE_METADATA_FIELDS)
+SC_FIELDS_COPY_NOT_NULL = [
+    'device_collections',
+    'lpath',
+    'size',
+    'comments',
+    'thumbnail'
+]
 
-# All fields except custom fields
-STANDARD_METADATA_FIELDS = SOCIAL_METADATA_FIELDS.union(
-                           PUBLICATION_METADATA_FIELDS).union(
-                           BOOK_STRUCTURE_FIELDS).union(
-                           DEVICE_METADATA_FIELDS).union(
-                           CALIBRE_METADATA_FIELDS)
-
-# Metadata fields that smart update must do special processing to copy.
-SC_FIELDS_NOT_COPIED =     frozenset(('title', 'title_sort', 'authors',
-                                      'author_sort', 'author_sort_map',
-                                      'cover_data', 'tags', 'languages',
-                                      'identifiers'))
-
-# Metadata fields that smart update should copy only if the source is not None
-SC_FIELDS_COPY_NOT_NULL =  frozenset(('device_collections', 'lpath', 'size', 'comments', 'thumbnail'))
-
-# Metadata fields that smart update should copy without special handling
-SC_COPYABLE_FIELDS =       SOCIAL_METADATA_FIELDS.union(
-                           PUBLICATION_METADATA_FIELDS).union(
-                           BOOK_STRUCTURE_FIELDS).union(
-                           DEVICE_METADATA_FIELDS).union(
-                           CALIBRE_METADATA_FIELDS) - \
-                           SC_FIELDS_NOT_COPIED.union(
-                           SC_FIELDS_COPY_NOT_NULL)
-
-SERIALIZABLE_FIELDS =      SOCIAL_METADATA_FIELDS.union(
-                           USER_METADATA_FIELDS).union(
-                           PUBLICATION_METADATA_FIELDS).union(
-                           CALIBRE_METADATA_FIELDS).union(
-                           DEVICE_METADATA_FIELDS) - \
-                           frozenset(('device_collections', 'formats',
-                               'cover_data'))
-
-SIMPLE_GET = frozenset(STANDARD_METADATA_FIELDS - TOP_LEVEL_IDENTIFIERS)
-SIMPLE_SET = frozenset(SIMPLE_GET - {'identifiers'})
+ALL_FIELDS = set(list(EXTH_Types.values()) + PUBLICATION_METADATA_FIELDS)

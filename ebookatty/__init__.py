@@ -20,9 +20,9 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #########################################################################
 
-from ebookatty.metadata import get_metadata, MetadataFetcher
+from ebookatty.metadata import MetadataFetcher
 from ebookatty.cli import execute
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
-__all__ = ["MetadataFetcher", "get_metadata", "execute"]
+__all__ = ["MetadataFetcher", "execute"]
