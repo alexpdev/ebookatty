@@ -29,15 +29,14 @@ from ebookatty import mobi, epub, standards
 class MetadataFetcher:
     """Primary Entrypoint for extracting metadata from most ebook filetypes."""
 
-    def __init__(self, path):
+    def __init__(self, path: str):
         """
         Construct the MetadataFetcher Class and return Instance.
 
-        Args:
-            path (str or path-like): The path to the ebook to extract from
-
-        Raises:
-            UnsupportedFormatError: When unknown format is encountered
+        Parameters
+        ----------
+        path : str
+            The path to the ebook to extract from
         """
         self.path = Path(path)
         if self.path.suffix == ".epub":
@@ -47,12 +46,14 @@ class MetadataFetcher:
         else:
             self.meta = {}
 
-    def get_metadata(self):
+    def get_metadata(self) -> dict:
         """
         Call to start the extraction process.
 
-        Returns:
-            dict: Metadata keys and values embedded in the file.
+        Returns
+        -------
+        dict :
+            Metadata keys and values embedded in the file.
         """
         if hasattr(self.meta, "metadata"):
             if self.meta.metadata:
@@ -62,15 +63,19 @@ class MetadataFetcher:
                 return self.metadata
         return {}
 
-def format_output(book):
+def format_output(book: dict) -> str:
     """
     Format the output for printing to STDOUT.
 
-    Args:
-        book (str or path-like): Path to ebook file
+    Parameters
+    ----------
+    book : dict
+        The books metadata dictionary.
 
-    Returns:
-        str: Text data to output to STDOUT
+    Returns
+    -------
+    str :
+        Text data to output to STDOUT
     """
     fields = standards.ALL_FIELDS
     termsize = shutil.get_terminal_size().columns
@@ -105,7 +110,28 @@ def format_output(book):
     print(final)
     return output
 
-def text_sections(section_size, text):
+def text_sections(section_size: int, text: str) -> str:
+    """
+    Split large text sections into smaller portions and yield result.
+
+    This function takes a string longer than _section_size_ and it splits
+    into sections by navigating to the section_size index and moving
+    back 1 character at a time until it reaches a space so it doesn't
+    make it's seperation midword.  it then splits off that section of
+    the text and yields it to the caller.
+
+    Parameters
+    ----------
+    section_size : int
+        the maximum length of the sections
+    text : str
+        the text that needs to be seperated
+
+    Yields
+    ------
+    Iterator[str]
+        the next section of the divided text.
+    """
     while len(text) > section_size:
         size = section_size
         while text[size] != ' ':

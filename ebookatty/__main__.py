@@ -23,8 +23,8 @@
 from ebookatty.cli import execute
 
 
-def main():
-    """Entry Point for program."""
+def main() -> None:
+    """Execute main entrypoint for app."""
     execute()
 
 
