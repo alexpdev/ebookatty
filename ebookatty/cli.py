@@ -28,8 +28,20 @@ import csv
 
 from ebookatty import MetadataFetcher
 
-def find_matches(files):
-    """Find files that match the patterns."""
+def find_matches(files: list) -> list:
+    """
+    Search list and find matching file paths that fit patterns.
+
+    Parameters
+    ----------
+    files : list
+        list of files and patterns to seach for
+
+    Returns
+    -------
+    list
+        the full absolute or relative path to matching file
+    """
     matches = []
     for file in files:
         matches += glob(file)
@@ -37,6 +49,11 @@ def find_matches(files):
 
 
 def execute():
+    """
+    Execute the program.
+
+    This is the applications main entrypoint and CLI implementation.
+    """
     parser = argparse.ArgumentParser(description="get ebook metadata", prefix_chars="-")
     parser.add_argument('file', help='path to ebook file(s), standard file pattern extensions are allowed.', nargs=1)
     parser.add_argument('-o', '--output', help='file path where metadata will be written. Acceptable formats include json and csv and are determined based on the file extension. Default is None', action="store")

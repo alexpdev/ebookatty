@@ -19,6 +19,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #########################################################################
+"""__init__ module for application."""
 
 from ebookatty.metadata import MetadataFetcher
 from ebookatty.cli import execute
