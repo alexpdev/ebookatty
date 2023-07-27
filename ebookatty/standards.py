@@ -267,7 +267,7 @@ id_map_strings = {
     528: "override-kindle-fonts",
     529: "Compression-Upgraded",
     530: "Soft-Hyphens-In-Content",
-    531: "Dictionary_In_Langague",
+    531: "Dictionary_In_Language",
     532: "Dictionary_Out_Language",
     533: "Font_Converted",
     534: "Amazon_Creator_Info",

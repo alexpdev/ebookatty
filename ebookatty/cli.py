@@ -35,7 +35,7 @@ def find_matches(files: list) -> list:
     Parameters
     ----------
     files : list
-        list of files and patterns to seach for
+        list of files and patterns to search for
 
     Returns
     -------

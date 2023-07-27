@@ -86,7 +86,7 @@ class Metadata:
         Parameters
         ----------
         key : str
-            the name of the atrribute
+            the name of the attribute
         value : str
             the value to set the attribute to
         """
@@ -238,7 +238,7 @@ class BookHeader:
 
     def get_codec(self) -> str:
         """
-        Extract the string encoding for the header recrods.
+        Extract the string encoding for the header records.
 
         Returns
         -------

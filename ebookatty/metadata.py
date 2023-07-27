@@ -117,7 +117,7 @@ def text_sections(section_size: int, text: str) -> str:
     This function takes a string longer than _section_size_ and it splits
     into sections by navigating to the section_size index and moving
     back 1 character at a time until it reaches a space so it doesn't
-    make it's seperation midword.  it then splits off that section of
+    make it's separation midword.  it then splits off that section of
     the text and yields it to the caller.
 
     Parameters
@@ -125,7 +125,7 @@ def text_sections(section_size: int, text: str) -> str:
     section_size : int
         the maximum length of the sections
     text : str
-        the text that needs to be seperated
+        the text that needs to be separated
 
     Yields
     ------

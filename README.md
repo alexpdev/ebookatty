@@ -11,7 +11,7 @@ Works as a CLI or can be used as a library. Usage details and examples provided 
 
 ## Features
 
-* Succesfully extracts metadata from .mobi .kfx .epub .azw .azw3 file formats
+* Successfully extracts metadata from .mobi .kfx .epub .azw .azw3 file formats
 * No external dependencies
 * Displays every bit of metadata information it finds and leaves out blh
 
