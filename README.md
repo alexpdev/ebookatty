@@ -1,3 +1,5 @@
+![EbookAtty](./ebookatty.png)
+
 # ebookatty
 
 ![License](https://img.shields.io/badge/License-LGPL-blue?style=for-the-badge&logo=appveyor)
@@ -45,10 +47,58 @@ from ebookatty import MetadataFetcher
 GNU LGPL v3.0
 [LICENSE FILE](./LICENSE.md)
 
-
 ## Usage
 
-### Example Use
+### Example API Use
+
+__example 1__
+```py
+>>> from pprint import pprint
+>>> from ebookatty import fetch_metadata
+>>> file_path = "Romeo and Juliet - William Shakespeare.mobi"
+>>> data = fetch_metadata(file_path)
+>>> pprint(data)
+{'author': 'William Shakespeare',
+ 'codec': 'utf-8',
+ 'codepage': '65001',
+ 'contributor': 'calibre (0.7.23) [http://calibre-ebook.com]',
+ 'description': 'SUMMARY: These violent delights have violent ends And in '
+                'their triumph die, like fire and powder, Which, as they kiss, '
+                'consume. When Romeo first lays eyes on the bewitching Juliet, '
+                "it's love at first sight. But though their love runs true and "
+                'deep, it is also completely forbidden. With family and fate '
+                'determined to keep them apart, will Romeo and Juliet find a '
+                "way to be together? William Shakespeare's masterpiece is one "
+                'of the most enduring stories of star-crossed love of all '
+                'time. Beautifully presented for a modern teen audience with '
+                'both the original play and a prose retelling of the beloved '
+                'story, this is the must-have edition of a timeless classic.',
+ 'doctype': 'EXTH; MOBI',
+ 'filetype': '.mobi',
+ 'identity': 'BOOKMOBI',
+ 'isbn': '9780061965494',
+ 'langid': '9',
+ 'name': 'Romeo and Juliet - William Shakespeare',
+ 'published': '2009-08-15T07:00:00+00:00',
+ 'publisher': 'HarperCollins',
+ 'rights': 'NONE',
+ 'subject': 'William; Renaissance; Vendetta; Juvenile Nonfiction; Historical; '
+            "Children's Books; Man-woman relationships; Historical - "
+            "Renaissance; Love & Romance; Playscripts (Children's; Shakespeare "
+            'plays; Shakespeare; Irish; 1564-1616; YA); General; Young Adult '
+            'Graphic Novels; Classics; Young Adult General Interest & Leisure; '
+            "Children's Books - Young Adult Fiction; Welsh; Juliet (Fictitious "
+            'character); Children: Young Adult (Gr. 7-9); Conflict of '
+            'generations; Verona (Italy); Romeo (Fictitious character); '
+            'Juvenile Fiction; Scottish; Drama; English',
+ 'title': 'Romeo and Juliet',
+ 'type': '2',
+ 'unique_id': '1974853891',
+ 'updatedtitle': 'Romeo and Juliet',
+ 'version': '0; 6'}
+```
+
+### Example CLI Use
 
 __example 1__
 ```bash

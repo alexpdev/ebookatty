@@ -22,9 +22,12 @@ Module contains implementation specific to amazon formatted ebooks.
 
 Classes and functions for .azw, .azw3, and .kfx ebooks.
 """
-from pathlib import Path
 import shutil
-from ebookatty import mobi, epub, standards
+from pathlib import Path
+from typing import Dict, Generator, Union
+
+from ebookatty import epub, mobi, standards
+
 
 class MetadataFetcher:
     """Primary Entrypoint for extracting metadata from most ebook filetypes."""
@@ -44,9 +47,9 @@ class MetadataFetcher:
         elif self.path.suffix in [".azw3", "azw", "kfx", ".mobi"]:
             self.meta = mobi.Kindle(self.path)
         else:
-            self.meta = {}
+            self.meta = mobi.Kindle(self.path)
 
-    def get_metadata(self) -> dict:
+    def show_metadata(self) -> Dict[str, str]:
         """
         Call to start the extraction process.
 
@@ -62,6 +65,43 @@ class MetadataFetcher:
                 self.metadata = self.meta.metadata
                 return self.metadata
         return {}
+
+    def get_metadata(self) -> Dict[str, str]:
+        """Retreive metadata from ebook.
+
+        Returns
+        -------
+        Dict[str, str]
+            metadata dictionary
+        """
+        return self.meta.metadata
+
+
+def fetch_metadata(path: Union[str | Path]) -> Dict[str, str]:
+    """Retreive metadata for ebook located at the supplied file path.
+
+    Parameters
+    ----------
+    path : Union[str | Path]
+        file path of the ebook.
+
+    Returns
+    -------
+    Dict[str, str]
+        Ebook metadata available.
+    """
+    path = Path(path)
+    try:
+        if path.suffix.lower() == ".epub":
+            meta = epub.Epub(path)
+        elif path.suffix.lower() in [".azw3", "azw", "kfx", ".mobi"]:
+            meta = mobi.Kindle(path)
+        else:
+            meta = mobi.Kindle(path)
+        return meta.metadata
+    except Exception:
+        return None
+
 
 def format_output(book: dict) -> str:
     """
@@ -104,13 +144,14 @@ def format_output(book: dict) -> str:
                 text += extra + section + "\n"
             output.append(text)
     output = sorted(output, key=len)
-    output.insert(0,"\n" +("-" * long_line))
+    output.insert(0, "\n" + ("-" * long_line))
     output.append(("-" * long_line) + "\n")
     final = "\n".join(output)
     print(final)
     return output
 
-def text_sections(section_size: int, text: str) -> str:
+
+def text_sections(section_size: int, text: str) -> Generator:
     """
     Split large text sections into smaller portions and yield result.
 
@@ -129,13 +170,13 @@ def text_sections(section_size: int, text: str) -> str:
 
     Yields
     ------
-    Iterator[str]
+    Generator[str]
         the next section of the divided text.
     """
     while len(text) > section_size:
         size = section_size
-        while text[size] != ' ':
+        while text[size] != " ":
             size -= 1
         yield text[:size]
-        text = text[size+1:]
+        text = text[size + 1 :]
     yield text

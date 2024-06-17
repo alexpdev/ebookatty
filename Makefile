@@ -1,3 +1,5 @@
+version = "0.1.2"
+
 clean : ## Remove residual files
 	rm -rfv **/__pycache__
 	rm -rfv *.egg-info

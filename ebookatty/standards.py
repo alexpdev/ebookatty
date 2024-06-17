@@ -368,7 +368,7 @@ OPF_TAGS = [
     "type",
     "identifiers",
     "version",
-    "name"
+    "name",
 ]
 
 
@@ -462,94 +462,88 @@ OPF_PARENT_TAGS = [
     "guide",
 ]
 
-TOP_LEVEL_IDENTIFIERS = [
-    'isbn'
-]
+TOP_LEVEL_IDENTIFIERS = ["isbn"]
 
 PUBLICATION_METADATA_FIELDS = [
-    'title',
-    'title_sort',
-    'authors',
-    'author_sort_map',
-    'author_sort',
-    'creator',
-    'book_producer',
-    'timestamp',
-    'pubdate',
-    'identity',
-    'ident',
-    'asin',
-    'codec',
-    'doctype',
-    'path',
-    'extension',
-    'name',
-    'filename',
-    'unique_id',
-    'version',
-    'language',
-    'langid',
-    'last_modified',
-    'rights',
-    'publication_type',
-    'uuid',
-    'languages',
-    'publisher',
-    'cover',
-    'cover_data',
-    'thumbnail',
+    "title",
+    "title_sort",
+    "authors",
+    "author_sort_map",
+    "author_sort",
+    "creator",
+    "book_producer",
+    "timestamp",
+    "pubdate",
+    "identity",
+    "ident",
+    "asin",
+    "codec",
+    "doctype",
+    "path",
+    "extension",
+    "name",
+    "filename",
+    "unique_id",
+    "version",
+    "language",
+    "langid",
+    "last_modified",
+    "rights",
+    "publication_type",
+    "uuid",
+    "languages",
+    "publisher",
+    "cover",
+    "cover_data",
+    "thumbnail",
 ]
 
 BOOK_STRUCTURE_FIELDS = [
-    'toc', 'spine', 'guide', 'manifest',
+    "toc",
+    "spine",
+    "guide",
+    "manifest",
 ]
 
-USER_METADATA_FIELDS = [
-    'user_metadata'
-]
+USER_METADATA_FIELDS = ["user_metadata"]
 
-DEVICE_METADATA_FIELDS = [
-    'device_collections',
-    'lpath',
-    'size',
-    'mime'
-]
+DEVICE_METADATA_FIELDS = ["device_collections", "lpath", "size", "mime"]
 
 CALIBRE_METADATA_FIELDS = [
-    'application_id',
-    'db_id',
-    'formats',
-    'user_categories',
-    'author_link_map',
+    "application_id",
+    "db_id",
+    "formats",
+    "user_categories",
+    "author_link_map",
 ]
 
 SOCIAL_METADATA_FIELDS = [
-    'tags',
-    'rating',
-    'comments',
-    'series',
-    'series_index',
-    'identifiers',
+    "tags",
+    "rating",
+    "comments",
+    "series",
+    "series_index",
+    "identifiers",
 ]
 
 SC_FIELDS_NOT_COPIED = [
-    'title',
-    'title_sort',
-    'authors',
-    'author_sort',
-    'author_sort_map',
-    'cover_data',
-    'tags',
-    'languages',
-    'identifiers'
+    "title",
+    "title_sort",
+    "authors",
+    "author_sort",
+    "author_sort_map",
+    "cover_data",
+    "tags",
+    "languages",
+    "identifiers",
 ]
 
 SC_FIELDS_COPY_NOT_NULL = [
-    'device_collections',
-    'lpath',
-    'size',
-    'comments',
-    'thumbnail'
+    "device_collections",
+    "lpath",
+    "size",
+    "comments",
+    "thumbnail",
 ]
 
 ALL_FIELDS = set(list(EXTH_Types.values()) + PUBLICATION_METADATA_FIELDS)

@@ -23,6 +23,7 @@ import re
 import zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
+
 from ebookatty.standards import OPF_TAGS
 
 
@@ -51,7 +52,7 @@ class Epub:
         meta = self.iterer(root)
         for key, val in meta.items():
             if val:
-                val = '; '.join([str(i) for i in set(val)])
+                val = "; ".join([str(i) for i in set(val)])
                 if val == "en":
                     val = "English"
                 meta[key] = val
@@ -77,7 +78,7 @@ class Epub:
         dict
             all metadata extracted from element and its children
         """
-        pattern = re.compile(r'\{.*\}(\w+)')
+        pattern = re.compile(r"\{.*\}(\w+)")
         match = pattern.findall(root.tag)[0]
         if match in self.tags and root.text not in [None, "None", "NONE"]:
             meta = {match: [root.text]}
@@ -86,8 +87,8 @@ class Epub:
         for element in root:
             if element != root:
                 data = self.iterer(element)
-                for k,v in data.items():
-                    meta.setdefault(k,[])
+                for k, v in data.items():
+                    meta.setdefault(k, [])
                     meta[k].extend(v)
         return meta
 
@@ -102,13 +103,15 @@ class Epub:
         str
             the absolute path to the opf file contained in the ziparchive
         """
-        ns = {'n': 'urn:oasis:names:tc:opendocument:xmlns:container',
-              'pkg': 'http://www.idpf.org/2007/opf',
-              'dc': 'http://purl.org/dc/elements/1.1/'}
-        txt = self.epub_zip.read('META-INF/container.xml')
+        ns = {
+            "n": "urn:oasis:names:tc:opendocument:xmlns:container",
+            "pkg": "http://www.idpf.org/2007/opf",
+            "dc": "http://purl.org/dc/elements/1.1/",
+        }
+        txt = self.epub_zip.read("META-INF/container.xml")
         tree = ET.fromstring(txt)
-        elems = tree.findall('n:rootfiles/n:rootfile', namespaces=ns)
+        elems = tree.findall("n:rootfiles/n:rootfile", namespaces=ns)
         for elem in elems:
-            if 'full-path' in elem.attrib:
-                return elem.attrib['full-path']
+            if "full-path" in elem.attrib:
+                return elem.attrib["full-path"]
         return None

@@ -21,9 +21,9 @@
 #########################################################################
 """__init__ module for application."""
 
-from ebookatty.metadata import MetadataFetcher
+from ebookatty.metadata import MetadataFetcher, fetch_metadata
 from ebookatty.cli import execute
 
 __version__ = "0.3.1"
 
-__all__ = ["MetadataFetcher", "execute"]
+__all__ = ["MetadataFetcher", "execute", "fetch_metadata"]

@@ -19,16 +19,17 @@
 #########################################################################
 """Utility functions and methods."""
 
-from glob import glob
-from pathlib import Path
+import argparse
 import json
 import sys
-import argparse
-import csv
+from glob import glob
+from pathlib import Path
+from typing import List
 
 from ebookatty import MetadataFetcher
 
-def find_matches(files: list) -> list:
+
+def find_matches(files: List[str]) -> List[str]:
     """
     Search list and find matching file paths that fit patterns.
 
@@ -55,8 +56,17 @@ def execute():
     This is the applications main entrypoint and CLI implementation.
     """
     parser = argparse.ArgumentParser(description="get ebook metadata", prefix_chars="-")
-    parser.add_argument('file', help='path to ebook file(s), standard file pattern extensions are allowed.', nargs=1)
-    parser.add_argument('-o', '--output', help='file path where metadata will be written. Acceptable formats include json and csv and are determined based on the file extension. Default is None', action="store")
+    parser.add_argument(
+        "file",
+        help="path to ebook file(s), standard file pattern extensions are allowed.",
+        nargs=1,
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        help="file path where metadata will be written. Acceptable formats include json and csv and are determined based on the file extension. Default is None",
+        action="store",
+    )
     if len(sys.argv[1:]) == 0:
         sys.argv.append("-h")
     args = parser.parse_args(sys.argv[1:])
@@ -67,10 +77,12 @@ def execute():
         fetcher = MetadataFetcher(match)
         data = fetcher.get_metadata()
         datas.append(data)
+        if not args.output:
+            fetcher.show_metadata()
     if args.output:
         path = Path(args.output)
         if path.suffix == ".json":
-            json.dump(datas, open(path,"wt"))
+            json.dump(datas, open(path, "wt"))
         elif path.suffix == ".csv":
             d = set()
             for row in datas:
