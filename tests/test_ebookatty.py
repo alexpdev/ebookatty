@@ -1,3 +1,4 @@
+import json
 import sys
 import shutil
 import os
@@ -60,6 +61,44 @@ def test_cli(testdir, flag, outdir, pattern, ext):
         assert os.path.exists(out)
     else:
         assert not out
+
+
+def test_cli_stdout_json(testdir, capsys):
+    files = os.path.join(testdir, "*.epub")
+    sys.argv = ["ebookatty", files, "--format", "json"]
+    execute()
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert isinstance(payload, list)
+    assert payload
+
+
+def test_cli_stdout_csv(testdir, capsys):
+    files = os.path.join(testdir, "*.epub")
+    sys.argv = ["ebookatty", files, "--format", "csv"]
+    execute()
+    captured = capsys.readouterr()
+    lines = [line for line in captured.out.strip().splitlines() if line]
+    assert lines
+    assert "," in lines[0]
+
+
+def test_cli_stdout_table_via_dash(testdir, capsys):
+    files = os.path.join(testdir, "*.epub")
+    sys.argv = ["ebookatty", files, "-o", "-"]
+    execute()
+    captured = capsys.readouterr()
+    assert "---" in captured.out
+
+
+def test_cli_format_precedence(testdir, outdir):
+    files = os.path.join(testdir, "*.epub")
+    outfile = os.path.join(outdir, "forced.json.csv")
+    sys.argv = ["ebookatty", files, "-o", outfile, "--format", "json"]
+    execute()
+    with open(outfile, "r", encoding="utf-8") as fd:
+        payload = json.load(fd)
+    assert isinstance(payload, list)
 
 
 def test_main_execute():

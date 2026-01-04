@@ -24,9 +24,9 @@ import json
 import sys
 from glob import glob
 from pathlib import Path
-from typing import List
+from typing import List, Optional, TextIO
 
-from ebookatty import MetadataFetcher
+from ebookatty.metadata import MetadataFetcher, format_output
 
 
 def find_matches(files: List[str]) -> List[str]:
@@ -49,6 +49,88 @@ def find_matches(files: List[str]) -> List[str]:
     return matches
 
 
+def _determine_format(selected_format: Optional[str], output_target: Optional[str]) -> str:
+    """Resolve the format that should be used for emitting metadata."""
+    if selected_format:
+        return selected_format
+    if output_target and output_target != "-":
+        suffix = Path(output_target).suffix.lower()
+        if suffix == ".json":
+            return "json"
+        if suffix == ".csv":
+            return "csv"
+    return "table"
+
+
+def _normalize_csv_value(record):
+    if isinstance(record, list):
+        record = record[0]
+    if isinstance(record, int):
+        record = str(record)
+    if isinstance(record, bytes):  # pragma: nocover
+        try:
+            record = str(record[0], encoding="utf8", errors="ignore")
+        except Exception:  # pragma: nocover
+            return ""
+    return record if isinstance(record, str) else str(record or "")
+
+
+def _write_csv(datas, stream: TextIO) -> None:
+    d = set()
+    for row in datas:
+        for key in row.keys():
+            d.add(key)
+    headers = list(d)
+    layers = [headers]
+    for row in datas:
+        layer = []
+        for header in headers:
+            record = row.get(header, "")
+            record = _normalize_csv_value(record)
+            layer.append(record)
+        layers.append(layer)
+    for layer in layers:
+        try:
+            stream.write(",".join(layer) + "\n")
+        except Exception:  # pragma: nocover
+            continue
+
+
+def _write_json(datas, stream: TextIO) -> None:
+    json.dump(datas, stream)
+    stream.write("\n")
+
+
+def _write_table(datas, stream: TextIO) -> None:
+    for row in datas:
+        if not row:
+            continue
+        table = format_output(row, emit=False)
+        stream.write(table)
+
+
+def _emit_output(datas, output_format: str, output_target: Optional[str]) -> None:
+    if output_target and output_target != "-":
+        kwargs = {"encoding": "utf-8"}
+        if output_format == "csv":
+            kwargs["errors"] = "ignore"
+        stream: TextIO = open(Path(output_target), "w", **kwargs)
+        close_stream = True
+    else:
+        stream = sys.stdout
+        close_stream = False
+    try:
+        if output_format == "json":
+            _write_json(datas, stream)
+        elif output_format == "csv":
+            _write_csv(datas, stream)
+        elif output_format == "table":
+            _write_table(datas, stream)
+    finally:
+        if close_stream:
+            stream.close()
+
+
 def execute():
     """
     Execute the program.
@@ -64,8 +146,15 @@ def execute():
     parser.add_argument(
         "-o",
         "--output",
-        help="file path where metadata will be written. Acceptable formats include json and csv and are determined based on the file extension. Default is None",
+        help="file path where metadata will be written. Use '-' to send data to STDOUT. Acceptable formats include json and csv and are determined based on the file extension. Default is None",
         action="store",
+    )
+    parser.add_argument(
+        "-F",
+        "--format",
+        choices=["table", "json", "csv"],
+        help="output format to use for metadata. Defaults to 'table' (plain text) unless an output file extension specifies json or csv.",
+        dest="output_format",
     )
     if len(sys.argv[1:]) == 0:
         sys.argv.append("-h")
@@ -73,41 +162,14 @@ def execute():
     file_list = args.file
     matches = find_matches(file_list)
     datas = []
+    output_format = _determine_format(args.output_format, args.output)
+    show_table_now = output_format == "table" and not args.output
     for match in matches:
         fetcher = MetadataFetcher(match)
         data = fetcher.get_metadata()
         datas.append(data)
-        if not args.output:
+        if show_table_now:
             fetcher.show_metadata()
-    if args.output:
-        path = Path(args.output)
-        if path.suffix == ".json":
-            json.dump(datas, open(path, "wt"))
-        elif path.suffix == ".csv":
-            d = set()
-            for row in datas:
-                for key in row.keys():
-                    d.add(key)
-            headers = list(d)
-            layers = [headers]
-            for row in datas:
-                layer = []
-                for header in headers:
-                    record = row.get(header, "")
-                    if isinstance(record, list):
-                        record = record[0]
-                    if isinstance(record, int):
-                        record = str(record)
-                    if isinstance(record, bytes):  # pragma: nocover
-                        try:
-                            record = str(record[0], encoding="utf8", errors="ignore")
-                        except:
-                            continue
-                    layer.append(record)
-                layers.append(layer)
-            with open(path, "wt", encoding="utf-8", errors="ignore") as fd:
-                for layer in layers:
-                    try:
-                        fd.write(",".join(layer) + "\n")
-                    except:
-                        continue
+    needs_output = bool(args.output) or output_format in ("json", "csv")
+    if needs_output:
+        _emit_output(datas, output_format, args.output)
