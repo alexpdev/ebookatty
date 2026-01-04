@@ -115,6 +115,12 @@ __example 3__
 ebookatty /path/to/specific/ebook.azw3
 ```
 
+### Output options
+
+* `-o/--output <path>` writes metadata to a file. When the extension is `.json` or `.csv`, the data is emitted in that format. Use `-o -` to route the formatted output to STDOUT without creating a file.
+* `-F/--format {table,json,csv}` explicitly selects the output format and overrides any extension-derived choice. `table` matches the default on-screen view shown above.
+* When an output file is chosen, nothing is printed to the screen so the data only exists in one place.
+
 
 __example output__
 ```

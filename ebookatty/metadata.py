@@ -103,7 +103,7 @@ def fetch_metadata(path: Union[str | Path]) -> Dict[str, str]:
         return None
 
 
-def format_output(book: dict) -> str:
+def format_output(book: dict, emit: bool = True) -> str:
     """
     Format the output for printing to STDOUT.
 
@@ -147,8 +147,9 @@ def format_output(book: dict) -> str:
     output.insert(0, "\n" + ("-" * long_line))
     output.append(("-" * long_line) + "\n")
     final = "\n".join(output)
-    print(final)
-    return output
+    if emit:
+        print(final)
+    return final
 
 
 def text_sections(section_size: int, text: str) -> Generator:
